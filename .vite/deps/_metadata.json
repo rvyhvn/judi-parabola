@@ -1,0 +1,15 @@
+{
+  "hash": "06a865b1",
+  "configHash": "f425c5df",
+  "lockfileHash": "2fc0302a",
+  "browserHash": "caa35aed",
+  "optimized": {
+    "konva": {
+      "src": "../../node_modules/konva/lib/index.js",
+      "file": "konva.js",
+      "fileHash": "85deb8d8",
+      "needsInterop": true
+    }
+  },
+  "chunks": {}
+}
