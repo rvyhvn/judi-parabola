@@ -12,10 +12,11 @@ let groundPos = { x: 0, y: 200 };
 let ballPosition = { x: -650, y: groundPos.y - 25 };
 let velocity = 0,
 	angle = 0,
-	gravity = 0.5; // Set initial velocity, angle, and gravity
-let dx = 0,
-	dy = 0; // Velocity components
-let animationId;
+	gravity = 0.5;
+let vx = 0,
+	vy = 0;
+let animationId,
+	canBounce = true;
 
 const stage = new Konva.Stage({
 	container: "container",
@@ -79,43 +80,36 @@ stage.on("dragmove", () => {
 
 basketBall.on("click", () => {
 	console.log("Basket ball clicked!");
+	canBounce = false;
 
-	// Set initial velocity and angle based on user input or default values
-	velocity = 20; // Example initial velocity
-	angle = 45; // Example initial angle in degrees
+	velocity = 20;
+	angle = 45;
 
-	// Convert angle to radians
 	const angleRad = (angle * Math.PI) / 180;
 
-	// Calculate velocity components
-	dx = velocity * Math.cos(angleRad);
-	dy = -velocity * Math.sin(angleRad);
+	vx = velocity * Math.cos(angleRad);
+	vy = velocity * Math.sin(angleRad);
 
-	// Start the animation loop
 	animationLoop();
 });
 
 const animationLoop = () => {
-	// Update ball position based on velocity and gravity
-	ballPosition.x += dx;
-	ballPosition.y += dy;
-	dy += gravity;
+	const timeStep = 1;
+	ballPosition.x += vx * timeStep;
+	ballPosition.y += vy - gravity * timeStep;
+	vy += gravity * timeStep;
 
-	// Check if the ball has hit the ground
 	if (ballPosition.y >= groundPos.y - basketBall.radius()) {
 		ballPosition.y = groundPos.y - basketBall.radius();
-		dy = -dy * 0.8; // Apply a damping factor to simulate bounce
-		dx *= 0.99; // Apply a friction factor to simulate deceleration
+		vy = -vy * 0.8;
+		vx *= 0.9;
 	}
 
-	// Update the ball position on the canvas
 	basketBall.position(ballPosition);
 
-	// Request the next animation frame
 	animationId = requestAnimationFrame(animationLoop);
 };
 
-// Helper function to stop the animation
 const stopAnimation = () => {
 	cancelAnimationFrame(animationId);
 };
