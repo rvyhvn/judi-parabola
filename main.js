@@ -2,21 +2,13 @@ import Konva from "konva";
 
 const width = window.innerWidth;
 const height = window.innerHeight;
+
 let stageScale = 1;
-let stagePosition = {
-	x: width / 2,
-	y: height / 2,
-};
+let stagePosition = { x: width / 2, y: height / 2 };
 let groundPoints = [-width, 0, width, 0];
 let groundPos = { x: 0, y: 200 };
 let ballPosition = { x: -650, y: groundPos.y - 25 };
-let velocity = 0,
-	angle = 0,
-	gravity = 0.5;
-let vx = 0,
-	vy = 0;
-let animationId,
-	canBounce = true;
+let isBallMoving = false;
 
 const stage = new Konva.Stage({
 	container: "container",
@@ -60,56 +52,60 @@ stage.on("dragmove", () => {
 	const currentPointerPosition = stage.getPointerPosition();
 	const offsetX = currentPointerPosition.x - prevPointerPosition.x;
 	const offsetY = currentPointerPosition.y - prevPointerPosition.y;
-
 	stagePosition.x += offsetX;
 	stagePosition.y += offsetY;
-
 	const minX = Math.min(...groundPoints.filter((_, i) => i % 2 === 0));
 	const maxX = Math.max(...groundPoints.filter((_, i) => i % 2 === 0));
 	const newMinX = minX - offsetX;
 	const newMaxX = maxX - offsetX;
-
 	groundPoints = [newMinX, 0, newMaxX, 0];
-
 	stage.setPosition(stagePosition);
 	ground.setPoints(groundPoints);
 	layer.batchDraw();
-
 	prevPointerPosition = currentPointerPosition;
 });
 
+const g = 9.81; // Gravity 9.81 m/s^2
+const dt = 0.1;
+
+let v0, angleDeg, t, v0x, v0y, vx, vy;
+
 basketBall.on("click", () => {
-	console.log("Basket ball clicked!");
-	canBounce = false;
-
-	velocity = 20;
-	angle = 45;
-
-	const angleRad = (angle * Math.PI) / 180;
-
-	vx = velocity * Math.cos(angleRad);
-	vy = velocity * Math.sin(angleRad);
-
-	animationLoop();
+	if (!isBallMoving) {
+		isBallMoving = true;
+		v0 = 50;
+		angleDeg = 85;
+		t = 0;
+		const angleRad = (angleDeg * Math.PI) / 180;
+		v0x = v0 * Math.cos(angleRad);
+		v0y = v0 * Math.sin(angleRad);
+		vx = v0x;
+		vy = v0y;
+		animate();
+	}
 });
 
-const animationLoop = () => {
-	const timeStep = 1;
-	ballPosition.x += vx * timeStep;
-	ballPosition.y += vy - gravity * timeStep;
-	vy += gravity * timeStep;
+function animate() {
+	if (!isBallMoving) return;
 
-	if (ballPosition.y >= groundPos.y - basketBall.radius()) {
-		ballPosition.y = groundPos.y - basketBall.radius();
-		vy = -vy * 0.8;
+	let x = basketBall.x() + vx * dt;
+	let y = basketBall.y() + vy * dt - 0.5 * g * dt * dt;
+
+	if (y >= groundPos.y - 25) {
+		vy = -vy * 0.8; // Assuming 80% restitution
 		vx *= 0.9;
+		y = groundPos.y - 25;
 	}
 
-	basketBall.position(ballPosition);
+	vy += g * dt;
 
-	animationId = requestAnimationFrame(animationLoop);
-};
+	basketBall.position({ x, y });
 
-const stopAnimation = () => {
-	cancelAnimationFrame(animationId);
-};
+	if (y < groundPos.y - 25 || Math.abs(vy) > 0.1) {
+		requestAnimationFrame(animate);
+	} else {
+		isBallMoving = false;
+	}
+
+	layer.batchDraw();
+}
