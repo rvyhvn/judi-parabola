@@ -9,6 +9,7 @@ let groundPoints = [-width, 0, width, 0];
 let groundPos = { x: 0, y: 200 };
 let ballPosition = { x: -650, y: groundPos.y - 25 };
 let isBallMoving = false;
+let hoveredPoint = null;
 
 const stage = new Konva.Stage({
 	container: "container",
@@ -38,8 +39,26 @@ const basketBall = new Konva.Circle({
 	stroke: "black",
 });
 
+const ballTrail = new Konva.Line({
+	stroke: "red",
+	strokeWidth: 1,
+	lineCap: "round",
+	lineJoin: "round",
+	points: [],
+});
+
+const infoText = new Konva.Text({
+	x: 0,
+	y: 10,
+	text: "",
+	fontSize: 50,
+	fontFamily: "Ubuntu",
+	fill: "black",
+});
+
 layer.add(ground);
 layer.add(basketBall);
+layer.add(infoText);
 stage.add(layer);
 
 let prevPointerPosition = { x: 0, y: 0 };
@@ -73,8 +92,8 @@ let v0, angleDeg, t, v0x, v0y, vx, vy;
 basketBall.on("click", () => {
 	if (!isBallMoving) {
 		isBallMoving = true;
-		v0 = 50;
-		angleDeg = 85;
+		v0 = 60;
+		angleDeg = 45;
 		t = 0;
 		const angleRad = (angleDeg * Math.PI) / 180;
 		v0x = v0 * Math.cos(angleRad);
@@ -82,6 +101,20 @@ basketBall.on("click", () => {
 		vx = v0x;
 		vy = v0y;
 		animate();
+	}
+});
+
+layer.add(ballTrail);
+
+ballTrail.on("click", () => {
+	console.log("Ball trail clicked!");
+	const mousePos = stage.getPointerPosition();
+	const closestPoint = this.getClosestPoint(mousePos);
+
+	if (closestPoint) {
+		hoveredPoint = closestPoint.point;
+	} else {
+		hoveredPoint = null;
 	}
 });
 
@@ -100,7 +133,20 @@ function animate() {
 	vy += g * dt;
 
 	basketBall.position({ x, y });
-
+	ballTrail.points(ballTrail.points().concat([x, y]));
+	if (hoveredPoint) {
+		const index = ballTrail.points().indexOf(hoveredPoint.x, hoveredPoint.y);
+		const time = (index / 2) * dt; // Calculate approximate time based on index
+		infoText.text(
+			`Position: (${hoveredPoint.x.toFixed(2)}, ${hoveredPoint.y.toFixed(
+				2
+			)})\nVelocity: (${vx.toFixed(2)}, ${vy.toFixed(2)})\nTime: ${time.toFixed(
+				2
+			)} s`
+		);
+	} else {
+		infoText.text("");
+	}
 	if (y < groundPos.y - 25 || Math.abs(vy) > 0.1) {
 		requestAnimationFrame(animate);
 	} else {
