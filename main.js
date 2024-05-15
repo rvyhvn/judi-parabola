@@ -62,6 +62,7 @@ layer.add(infoText);
 stage.add(layer);
 
 let prevPointerPosition = { x: 0, y: 0 };
+let animationFrameId;
 
 stage.on("pointermove", () => {
 	prevPointerPosition = stage.getPointerPosition();
@@ -118,6 +119,8 @@ ballTrail.on("click", () => {
 	}
 });
 
+const velocityThreshold = 0.1; // Threshold below which the ball stops moving
+
 function animate() {
 	if (!isBallMoving) return;
 
@@ -126,7 +129,7 @@ function animate() {
 
 	if (y >= groundPos.y - 25) {
 		vy = -vy * 0.8; // Assuming 80% restitution
-		vx *= 0.9;
+		vx *= 0.9; // Assuming 90% horizontal velocity retention
 		y = groundPos.y - 25;
 	}
 
@@ -147,11 +150,16 @@ function animate() {
 	} else {
 		infoText.text("");
 	}
-	if (y < groundPos.y - 25 || Math.abs(vy) > 0.1) {
-		requestAnimationFrame(animate);
+	if (
+		y <= groundPos.y - 25 &&
+		Math.abs(vx) > velocityThreshold
+	) {
+		animationFrameId = requestAnimationFrame(animate);
 	} else {
 		isBallMoving = false;
+		cancelAnimationFrame(animationFrameId); // Cancel the animation frame
 	}
 
+	console.log(`x: ${basketBall.x()}, y: ${basketBall.y()}, vx: ${vx}, vy: ${vy}`);
 	layer.batchDraw();
 }
