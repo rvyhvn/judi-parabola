@@ -91,6 +91,7 @@ let g = 9.81; // Gravity 9.81 m/s^2
 const dt = 0.1;
 
 let t, v0x, v0y, vx, vy;
+const isAboveGround = groundPos.y - 25;
 
 basketBall.on("click", () => {
     if (!isBallMoving) {
@@ -119,7 +120,7 @@ ballTrail.on("click", () => {
     }
 });
 
-const velocityThreshold = 0.1; // Threshold below which the ball stops moving
+const velocityThreshold = 0.3; // Threshold below which the ball stops moving
 
 function animate() {
     if (!isBallMoving) return;
@@ -127,10 +128,11 @@ function animate() {
     let x = basketBall.x() + vx * dt;
     let y = basketBall.y() + vy * dt - 0.5 * g * dt * dt;
 
-    if (y >= groundPos.y - 25) {
+    if (y >= isAboveGround) {
         vy = -vy * 0.8; // Assuming 80% restitution
-        vx *= 0.9; // Assuming 90% horizontal velocity retention
-        y = groundPos.y - 25;
+        if (angleDeg === 90) vx = 0; // Ensure no horizontal movement for 90 degrees
+        else vx *= 0.9; // Assuming 90% horizontal velocity retention
+        y = isAboveGround;
     }
 
     vy += g * dt;
@@ -151,11 +153,13 @@ function animate() {
         infoText.text("");
     }
     if (
-        y <= groundPos.y - 25 &&
-        Math.abs(vx) > velocityThreshold
+        y <= isAboveGround &&
+        (Math.abs(vx) > velocityThreshold)
     ) {
         animationFrameId = requestAnimationFrame(animate);
-    } else {
+    }  if (y <= isAboveGround && (Math.abs(vy) > velocityThreshold || Math.abs(vx) > velocityThreshold)) {
+		animationFrameId = requestAnimationFrame(animate);
+	} else {
         isBallMoving = false;
         cancelAnimationFrame(animationFrameId); // Cancel the animation frame
     }
@@ -163,6 +167,7 @@ function animate() {
     console.log(`x: ${basketBall.x()}, y: ${basketBall.y()}, vx: ${vx}, vy: ${vy}`);
     layer.batchDraw();
 }
+
 
 // Slider event listeners
 document.getElementById('velocity-slider').addEventListener('input', (event) => {
