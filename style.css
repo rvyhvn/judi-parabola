@@ -82,6 +82,17 @@ button:focus-visible {
 	outline: 4px auto -webkit-focus-ring-color;
 }
 
+.slider-container {
+	margin: 20px;
+}
+.slider-label {
+	display: block;
+	margin-bottom: 5px;
+}
+.slider {
+	width: 100%;
+}
+
 @media (prefers-color-scheme: light) {
 	:root {
 		color: #213547;
