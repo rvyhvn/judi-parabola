@@ -63,20 +63,10 @@ const ballTrail = new Konva.Line({
 	points: [],
 });
 
-const infoText = new Konva.Text({
-	x: 0,
-	y: 10,
-	text: "",
-	fontSize: 50,
-	fontFamily: "Ubuntu",
-	fill: "black",
-});
-
 layer.add(ground);
 layer.add(basketBall);
 layer.add(ballHorLine);
 layer.add(ballVerLine);
-layer.add(infoText);
 stage.add(layer);
 
 let prevPointerPosition = { x: 0, y: 0 };
@@ -85,6 +75,7 @@ let animationFrameId;
 stage.on("pointermove", () => {
 	prevPointerPosition = stage.getPointerPosition();
 });
+
 
 stage.on("dragmove", () => {
 	const currentPointerPosition = stage.getPointerPosition();
@@ -108,12 +99,13 @@ const dt = 0.1;
 
 let v0, angleDeg, t, v0x, v0y, vx, vy;
 const isAboveGround = groundPos.y - 25;
+const isRightAngle = angleDeg == 90;
 
 basketBall.on("click", () => {
 	if (!isBallMoving) {
 		isBallMoving = true;
 		v0 = 60;
-		angleDeg = 90;
+		angleDeg = 60;
 		t = 0;
 		const angleRad = (angleDeg * Math.PI) / 180;
 		v0x = v0 * Math.cos(angleRad);
@@ -125,19 +117,6 @@ basketBall.on("click", () => {
 });
 
 layer.add(ballTrail);
-
-ballTrail.on("click", () => {
-	console.log("Ball trail clicked!");
-	const mousePos = stage.getPointerPosition();
-	const closestPoint = this.getClosestPoint(mousePos);
-
-	if (closestPoint) {
-		hoveredPoint = closestPoint.point;
-	} else {
-		hoveredPoint = null;
-	}
-});
-
 
 function animate() {
 	if (!isBallMoving) return;
@@ -167,32 +146,17 @@ function animate() {
 	ballTrail.points(ballTrail.points().concat([x, y]));
 	if (hoveredPoint) {
 		const index = ballTrail.points().indexOf(hoveredPoint.x, hoveredPoint.y);
-		const time = (index / 2) * dt; // Calculate approximate time based on index
-		infoText.text(
-			`Position: (${hoveredPoint.x.toFixed(2)}, ${hoveredPoint.y.toFixed(
-				2
-			)})\nVelocity: (${vx.toFixed(2)}, ${vy.toFixed(2)})\nTime: ${time.toFixed(
-				2
-			)} s`
-		);
-	} else {
-		infoText.text("");
-	}
-  const velocityThreshold = 3; // Threshold below which the ball stops moving
+	} 
+  const velocityThreshold = 3; // pixel
 	if (
-		y <= isAboveGround // 175
-    ||
+		y <= isAboveGround &&
 		Math.abs(vx) > velocityThreshold
 	) {
 		animationFrameId = requestAnimationFrame(animate);
-    // line di atas ini harusnya disimpan di variabel. contoh: animationFrameId = requestAnimationFrame(animate);
 
 	} else {
 		isBallMoving = false;
-		cancelAnimationFrame(animationFrameId); // Cancel the animation frame
-    // animationFrameId tadi, dijadikan argument untuk bisa dicancel framenya jika animasi sudah selesai.
-
-    // TAPI NGEBUG SMUA AJG
+		cancelAnimationFrame(animationFrameId);
 	}
 
 	layer.batchDraw();
