@@ -140,12 +140,6 @@ ballTrail.on("click", () => {
 const velocityThreshold = 3; // Threshold below which the ball stops moving
 
 function animate() {
-	const rotation = basketBall.rotation() + 1;
-	basketBall.rotation(rotation);
-	ballHorLine.rotation(rotation);
-	ballVerLine.rotation(rotation);
-	ballHorLine.position({x: basketBall.x(), y: basketBall.y()})
-	ballVerLine.position({x: basketBall.x(), y: basketBall.y()})	
 	if (!isBallMoving) return;
 
 	let x = basketBall.x() + vx * dt;
@@ -155,11 +149,19 @@ function animate() {
 		vy = -vy * 0.8; // Assuming 80% restitution
 		vx *= 0.9; // Assuming 90% horizontal velocity retention
 		y = groundPos.y - 25;
+
 	}
 
 	vy += g * dt;
 
 	basketBall.position({ x, y });
+	const rotationAngle = Math.atan2(vy, vx)
+	basketBall.rotation((rotationAngle * 180) / Math.PI);
+	ballHorLine.rotation((rotationAngle * 180) / Math.PI);
+	ballVerLine.rotation((rotationAngle * 180) / Math.PI);
+	ballHorLine.position({x: basketBall.x(), y: basketBall.y()})
+	ballVerLine.position({x: basketBall.x(), y: basketBall.y()})	
+
 	ballTrail.points(ballTrail.points().concat([x, y]));
 	if (hoveredPoint) {
 		const index = ballTrail.points().indexOf(hoveredPoint.x, hoveredPoint.y);
@@ -184,6 +186,5 @@ function animate() {
 		cancelAnimationFrame(animationFrameId); // Cancel the animation frame
 	}
 
-	console.log(`x: ${basketBall.x()}, y: ${basketBall.y()}, vx: ${vx}, vy: ${vy}`);
 	layer.batchDraw();
 }
