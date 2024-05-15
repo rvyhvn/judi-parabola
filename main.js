@@ -39,6 +39,22 @@ const basketBall = new Konva.Circle({
 	stroke: "black",
 });
 
+const ballHorLine = new Konva.Line({
+	points: [-25, 0, 25, 0],
+	x: basketBall.x(),
+	y: basketBall.y(),
+	stroke: 'black',
+	strokeWidth: 1,
+})
+
+const ballVerLine = new Konva.Line({
+	points: [0, -25, 0, 25],
+	x: basketBall.x(),
+	y: basketBall.y(),
+	stroke: 'black',
+	strokeWidth: 1,
+})
+
 const ballTrail = new Konva.Line({
 	stroke: "red",
 	strokeWidth: 1,
@@ -58,6 +74,8 @@ const infoText = new Konva.Text({
 
 layer.add(ground);
 layer.add(basketBall);
+layer.add(ballHorLine);
+layer.add(ballVerLine);
 layer.add(infoText);
 stage.add(layer);
 
@@ -119,9 +137,15 @@ ballTrail.on("click", () => {
 	}
 });
 
-const velocityThreshold = 0.1; // Threshold below which the ball stops moving
+const velocityThreshold = 3; // Threshold below which the ball stops moving
 
 function animate() {
+	const rotation = basketBall.rotation() + 1;
+	basketBall.rotation(rotation);
+	ballHorLine.rotation(rotation);
+	ballVerLine.rotation(rotation);
+	ballHorLine.position({x: basketBall.x(), y: basketBall.y()})
+	ballVerLine.position({x: basketBall.x(), y: basketBall.y()})	
 	if (!isBallMoving) return;
 
 	let x = basketBall.x() + vx * dt;
