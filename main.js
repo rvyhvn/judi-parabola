@@ -107,6 +107,7 @@ const g = 9.81; // Gravity 9.81 m/s^2
 const dt = 0.1;
 
 let v0, angleDeg, t, v0x, v0y, vx, vy;
+const isAboveGround = groundPos.y - 25;
 
 basketBall.on("click", () => {
 	if (!isBallMoving) {
@@ -137,7 +138,6 @@ ballTrail.on("click", () => {
 	}
 });
 
-const velocityThreshold = 3; // Threshold below which the ball stops moving
 
 function animate() {
 	if (!isBallMoving) return;
@@ -145,13 +145,13 @@ function animate() {
 	let x = basketBall.x() + vx * dt;
 	let y = basketBall.y() + vy * dt - 0.5 * g * dt * dt;
 
+  console.log(vx);
 
-	if (y >= groundPos.y - 25) {
+	if (y >= isAboveGround) {
 		vy = -vy * 0.8; // Assuming 80% restitution
 
 		vx *= 0.9; // Assuming 90% horizontal velocity retention
-		y = groundPos.y - 25;
-		console.log("vy2:", vy);
+		y = isAboveGround;
 	}
 
 	vy += g * dt;
@@ -178,17 +178,18 @@ function animate() {
 	} else {
 		infoText.text("");
 	}
+  const velocityThreshold = 3; // Threshold below which the ball stops moving
 	if (
-		y <= groundPos.y - 25
-    // &&
-		// Math.abs(vx) > velocityThreshold
+		y <= isAboveGround // 175
+    ||
+		Math.abs(vx) > velocityThreshold
 	) {
-		requestAnimationFrame(animate);
+		animationFrameId = requestAnimationFrame(animate);
     // line di atas ini harusnya disimpan di variabel. contoh: animationFrameId = requestAnimationFrame(animate);
 
 	} else {
 		isBallMoving = false;
-		// cancelAnimationFrame(animationFrameId); // Cancel the animation frame
+		cancelAnimationFrame(animationFrameId); // Cancel the animation frame
     // animationFrameId tadi, dijadikan argument untuk bisa dicancel framenya jika animasi sudah selesai.
 
     // TAPI NGEBUG SMUA AJG
