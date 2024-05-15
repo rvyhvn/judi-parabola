@@ -112,7 +112,7 @@ basketBall.on("click", () => {
 	if (!isBallMoving) {
 		isBallMoving = true;
 		v0 = 60;
-		angleDeg = 45;
+		angleDeg = 90;
 		t = 0;
 		const angleRad = (angleDeg * Math.PI) / 180;
 		v0x = v0 * Math.cos(angleRad);
@@ -145,11 +145,13 @@ function animate() {
 	let x = basketBall.x() + vx * dt;
 	let y = basketBall.y() + vy * dt - 0.5 * g * dt * dt;
 
+
 	if (y >= groundPos.y - 25) {
 		vy = -vy * 0.8; // Assuming 80% restitution
+
 		vx *= 0.9; // Assuming 90% horizontal velocity retention
 		y = groundPos.y - 25;
-
+		console.log("vy2:", vy);
 	}
 
 	vy += g * dt;
@@ -177,13 +179,19 @@ function animate() {
 		infoText.text("");
 	}
 	if (
-		y <= groundPos.y - 25 &&
-		Math.abs(vx) > velocityThreshold
+		y <= groundPos.y - 25
+    // &&
+		// Math.abs(vx) > velocityThreshold
 	) {
-		animationFrameId = requestAnimationFrame(animate);
+		requestAnimationFrame(animate);
+    // line di atas ini harusnya disimpan di variabel. contoh: animationFrameId = requestAnimationFrame(animate);
+
 	} else {
 		isBallMoving = false;
-		cancelAnimationFrame(animationFrameId); // Cancel the animation frame
+		// cancelAnimationFrame(animationFrameId); // Cancel the animation frame
+    // animationFrameId tadi, dijadikan argument untuk bisa dicancel framenya jika animasi sudah selesai.
+
+    // TAPI NGEBUG SMUA AJG
 	}
 
 	layer.batchDraw();
