@@ -120,7 +120,7 @@ ballTrail.on("click", () => {
     }
 });
 
-const velocityThreshold = 0.3; // Threshold below which the ball stops moving
+const velocityThreshold = 0.1; // Threshold below which the ball stops moving
 
 function animate() {
     if (!isBallMoving) return;
@@ -157,9 +157,7 @@ function animate() {
         (Math.abs(vx) > velocityThreshold)
     ) {
         animationFrameId = requestAnimationFrame(animate);
-    }  if (y <= isAboveGround && (Math.abs(vy) > velocityThreshold || Math.abs(vx) > velocityThreshold)) {
-		animationFrameId = requestAnimationFrame(animate);
-	} else {
+    } else {
         isBallMoving = false;
         cancelAnimationFrame(animationFrameId); // Cancel the animation frame
     }
