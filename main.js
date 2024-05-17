@@ -200,3 +200,20 @@ function animate() {
 
   layer.batchDraw();
 }
+
+
+// Slider event listeners
+document.getElementById('velocity-slider').addEventListener('input', (event) => {
+    v0 = parseFloat(event.target.value);
+    document.getElementById('velocity-value').textContent = v0;
+});
+
+document.getElementById('gravity-slider').addEventListener('input', (event) => {
+    g = parseFloat(event.target.value);
+    document.getElementById('gravity-value').textContent = g;
+});
+
+document.getElementById('angle-slider').addEventListener('input', (event) => {
+    angleDeg = parseFloat(event.target.value);
+    document.getElementById('angle-value').textContent = angleDeg;
+});
