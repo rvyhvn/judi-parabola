@@ -115,6 +115,27 @@ stage.on("dragmove", () => {
   groundPoints = [newMinX, 0, newMaxX, 0];
   stage.setPosition(stagePosition);
   ground.setPoints(groundPoints);
+
+  const skyWidth = width + width + Math.abs(newMinX) + Math.abs(newMaxX);
+  const skyHeight = height + height;
+  sky.width(skyWidth);
+  sky.height(skyHeight);
+  sky.x(newMinX - width);
+
+  const dirtWidth = skyWidth;
+  const dirtHeight = height;
+  dirt.width(dirtWidth);
+  dirt.height(dirtHeight);
+  dirt.x(newMinX - width);
+  dirt.y(ground.y() + 50);
+
+  const rockWidth = dirtWidth;
+  const rockHeight = 50;
+  rock.width(rockWidth);
+  rock.height(rockHeight);
+  rock.x(newMinX - width);
+  rock.y(ground.y());
+
   layer.batchDraw();
   prevPointerPosition = currentPointerPosition;
 });
