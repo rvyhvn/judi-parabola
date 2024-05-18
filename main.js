@@ -13,7 +13,7 @@ let isBallMoving = false;
 const stage = new Konva.Stage({
   container: "container",
   width: width,
-  height: height,
+  height: height - 50,
   x: stagePosition.x,
   y: stagePosition.y,
   scaleX: stageScale,
