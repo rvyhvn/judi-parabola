@@ -87,8 +87,48 @@ const ballTrail = new Konva.Line({
   points: [],
 });
 
+// Fungsi untuk membuat awan
+function createCloud(x, y) {
+	const cloudGroup = new Konva.Group({
+		x: x,
+		y: y * - 2,
+	});
+
+	const ellipses = [
+		{ x: 0, y: 0, radiusX: 50, radiusY: 30 },
+		{ x: 50, y: -20, radiusX: 60, radiusY: 40 },
+		{ x: 100, y: 0, radiusX: 50, radiusY: 30 },
+		{ x: 50, y: 20, radiusX: 70, radiusY: 50 },
+	];
+
+	ellipses.forEach((ellipse) => {
+		const cloudPart = new Konva.Ellipse({
+			x: ellipse.x,
+			y: ellipse.y,
+			radiusX: ellipse.radiusX,
+			radiusY: ellipse.radiusY,
+			fill: 'white',
+			stroke: 'white',
+		});
+		cloudGroup.add(cloudPart);
+	});
+
+	return cloudGroup;
+}
+
+// Fungsi untuk membuat banyak awan dengan posisi acak
+function createRandomClouds(numClouds) {
+	for (let i = 0; i < numClouds; i++) {
+		const x = Math.random() * width - width / 2;
+		const y = Math.random() * 300; // Sesuaikan batasan Y untuk menempatkan awan di bagian atas
+		const cloud = createCloud(x * 10, y);
+		layer.add(cloud);
+	}
+}
+
 layer.add(ground);
 bgLayer.add(sky, dirt, rock);
+createRandomClouds(100);
 layer.add(basketBall);
 layer.add(ballHorLine);
 layer.add(ballVerLine);
