@@ -37,7 +37,7 @@ const dirt = new Konva.Rect({
   y: ground.y() + 50,
   width: width + width,
   height: height,
-  fill: "brown",
+  fill: "green",
 });
 
 const rock = new Konva.Rect({
