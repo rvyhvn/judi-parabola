@@ -61,6 +61,7 @@ const basketBall = new Konva.Circle({
   y: ballPosition.y,
   radius: 25,
   stroke: "black",
+  fill: "orange",
 });
 
 const ballHorLine = new Konva.Line({
