@@ -217,7 +217,7 @@ const isAboveGround = groundPos.y - 25; // Condition to check mostly the ball po
 basketBall.on("dragmove", function() {
   if(this.y() > groundPos.y - this.radius()) {
     this.y(groundPos.y - this.radius());
-  } else {
+1  } else {
     ballHorLine.position({ x: basketBall.x(), y: basketBall.y() });
     ballVerLine.position({ x: basketBall.x(), y: basketBall.y() });
     tower.height(groundPos.y - this.y() - this.radius());
@@ -297,3 +297,5 @@ document.getElementById("angle-slider").addEventListener("input", (event) => {
   angleDeg = parseFloat(event.target.value);
   document.getElementById("angle-value").textContent = angleDeg;
 });
+
+layer.batchDraw()
