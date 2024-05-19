@@ -1,23 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<link rel="icon" type="image/svg+xml" href="/vite.svg" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>Parabola Movement</title>
-	</head>
-	<body>
-		<div id="container"></div>
-		<div class="slider-container">
-			<label class="slider-label" for="velocity-slider">Initial Velocity (v0): <span id="velocity-value">50</span></label>
-			<input type="range" id="velocity-slider" class="slider" min="0" max="100" value="50" />
-			
-			<label class="slider-label" for="gravity-slider">Gravity (g): <span id="gravity-value">9.81</span></label>
-			<input type="range" id="gravity-slider" class="slider" min="9.81" max="10" step="0.01" value="9.81" />
-			
-			<label class="slider-label" for="angle-slider">Angle (degrees): <span id="angle-value">45</span></label>
-			<input type="range" id="angle-slider" class="slider" min="0" max="90" value="45" />
-		</div>
-		<script type="module" src="/main.js"></script>
-	</body>
+<head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Parabola Movement</title>
+    <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+    <div id="container"></div>
+    <div class="slider-container">
+        <label class="slider-label" for="velocity-slider">Initial Velocity (v0): <span id="velocity-value">50</span></label>
+        <input type="range" id="velocity-slider" class="slider" min="0" max="100" value="50" />
+        <label class="slider-label" for="gravity-slider">Gravity (g): <span id="gravity-value">9.81</span></label>
+        <input type="range" id="gravity-slider" class="slider" min="9.81" max="10" step="0.01" value="9.81" />
+        <label class="slider-label" for="angle-slider">Angle (degrees): <span id="angle-value">45</span></label>
+        <input type="range" id="angle-slider" class="slider" min="0" max="90" value="45" />
+    </div>
+    <script type="module" src="/main.js"></script>
+</body>
 </html>
