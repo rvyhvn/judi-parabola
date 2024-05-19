@@ -87,7 +87,6 @@ const ballTrail = new Konva.Line({
   points: [],
 });
 
-// Fungsi untuk membuat awan
 function createCloud(x, y) {
   const cloudGroup = new Konva.Group({
     x: x,
@@ -116,11 +115,10 @@ function createCloud(x, y) {
   return cloudGroup;
 }
 
-// Fungsi untuk membuat banyak awan dengan posisi acak
 function createRandomClouds(numClouds) {
   for (let i = 0; i < numClouds; i++) {
     const x = Math.random() * width - width / 2;
-    const y = Math.random() * 300; // Sesuaikan batasan Y untuk menempatkan awan di bagian atas
+    const y = Math.random() * 300;
     const cloud = createCloud(x * 10, y);
     layer.add(cloud);
   }
