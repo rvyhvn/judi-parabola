@@ -34,24 +34,6 @@ const innerTire = new Konva.Circle({
   radius: 15,
 })
 
-// const cannonBody = new Konva.Line({
-//   points: [tire.x() + 35, tire.y(), 150, 165, 150, 120, -50, 100, -100, 125, -100, 200, tire.x() - 35, tire.y()],
-//   stroke: 'red',
-//   strokeWidth: 2,
-//   lineCap: 'round',
-//   lineJoin: 'round',
-//   tension: 0.2,
-// });
-
-// const cannonMuzle = new Konva.Line({
-//   points: [150, 165, 165, 160, 165, 125, 150, 120, 150, 165],
-//   stroke: 'black',
-//   strokeWidth: 2,
-//   lineCap: 'round',
-//   lineJoin: 'round',
-//   tension: -0.2,
-// })
-
 const cannonBody = new Konva.Rect({
   x: tire.x() - tire.radius() - 35,
   y: tire.y() - tire.radius() - 50,

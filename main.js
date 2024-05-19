@@ -19,6 +19,11 @@ const stage = new Konva.Stage({
   scaleX: stageScale,
   scaleY: stageScale,
   draggable: true,
+  dragBoundFunc: function(pos) {
+    stagePosition.x += pos.x - stage.x();
+    stagePosition.y += pos.y -stage.y();
+    return pos;
+  }
 });
 
 const layer = new Konva.Layer();
@@ -62,6 +67,13 @@ const basketBall = new Konva.Circle({
   radius: 25,
   stroke: "black",
   fill: "orange",
+  draggable: true,
+  dragBoundFunc: function (pos) {
+    return {
+      x: this.getAbsolutePosition().x,
+      y: pos.y,
+    };
+  },
 });
 
 const ballHorLine = new Konva.Line({
@@ -90,41 +102,41 @@ const ballTrail = new Konva.Line({
 
 // Fungsi untuk membuat awan
 function createCloud(x, y) {
-	const cloudGroup = new Konva.Group({
-		x: x,
-		y: y * - 2,
-	});
+  const cloudGroup = new Konva.Group({
+    x: x,
+    y: y * -2,
+  });
 
-	const ellipses = [
-		{ x: 0, y: 0, radiusX: 50, radiusY: 30 },
-		{ x: 50, y: -20, radiusX: 60, radiusY: 40 },
-		{ x: 100, y: 0, radiusX: 50, radiusY: 30 },
-		{ x: 50, y: 20, radiusX: 70, radiusY: 50 },
-	];
+  const ellipses = [
+    { x: 0, y: 0, radiusX: 50, radiusY: 30 },
+    { x: 50, y: -20, radiusX: 60, radiusY: 40 },
+    { x: 100, y: 0, radiusX: 50, radiusY: 30 },
+    { x: 50, y: 20, radiusX: 70, radiusY: 50 },
+  ];
 
-	ellipses.forEach((ellipse) => {
-		const cloudPart = new Konva.Ellipse({
-			x: ellipse.x,
-			y: ellipse.y,
-			radiusX: ellipse.radiusX,
-			radiusY: ellipse.radiusY,
-			fill: 'white',
-			stroke: 'white',
-		});
-		cloudGroup.add(cloudPart);
-	});
+  ellipses.forEach((ellipse) => {
+    const cloudPart = new Konva.Ellipse({
+      x: ellipse.x,
+      y: ellipse.y,
+      radiusX: ellipse.radiusX,
+      radiusY: ellipse.radiusY,
+      fill: "white",
+      stroke: "white",
+    });
+    cloudGroup.add(cloudPart);
+  });
 
-	return cloudGroup;
+  return cloudGroup;
 }
 
 // Fungsi untuk membuat banyak awan dengan posisi acak
 function createRandomClouds(numClouds) {
-	for (let i = 0; i < numClouds; i++) {
-		const x = Math.random() * width - width / 2;
-		const y = Math.random() * 300; // Sesuaikan batasan Y untuk menempatkan awan di bagian atas
-		const cloud = createCloud(x * 10, y);
-		layer.add(cloud);
-	}
+  for (let i = 0; i < numClouds; i++) {
+    const x = Math.random() * width - width / 2;
+    const y = Math.random() * 300; // Sesuaikan batasan Y untuk menempatkan awan di bagian atas
+    const cloud = createCloud(x * 10, y);
+    layer.add(cloud);
+  }
 }
 
 layer.add(ground);
@@ -139,22 +151,14 @@ stage.add(layer);
 let prevPointerPosition = { x: 0, y: 0 };
 let animationFrameId;
 
-stage.on("pointermove", () => {
-  prevPointerPosition = stage.getPointerPosition();
-});
-
 stage.on("dragmove", () => {
-  const currentPointerPosition = stage.getPointerPosition();
-  const offsetX = currentPointerPosition.x - prevPointerPosition.x;
-  const offsetY = currentPointerPosition.y - prevPointerPosition.y;
-  stagePosition.x += offsetX;
-  stagePosition.y += offsetY;
-  const minX = Math.min(...groundPoints.filter((_, i) => i % 2 === 0));
-  const maxX = Math.max(...groundPoints.filter((_, i) => i % 2 === 0));
-  const newMinX = minX - offsetX;
-  const newMaxX = maxX - offsetX;
+  console.log("draggin STAGE");
+  const offsetX = stage.x() - stagePosition.x;
+  const newMinX = Math.min(...groundPoints.filter((_, i) => i % 2 === 0) ) - offsetX; 
+  const newMaxX =Math.max(...groundPoints.filter((_, i) => i % 2 === 0)) - offsetX;
   groundPoints = [newMinX, 0, newMaxX, 0];
-  stage.setPosition(stagePosition);
+  stagePosition.x = stage.x();
+  stagePosition.y = stage.y();
   ground.setPoints(groundPoints);
 
   const skyWidth = width + width + Math.abs(newMinX) + Math.abs(newMaxX);
@@ -178,7 +182,7 @@ stage.on("dragmove", () => {
   rock.y(ground.y());
 
   layer.batchDraw();
-  prevPointerPosition = currentPointerPosition;
+  // prevPointerPosition = currentPointerPosition;
 });
 
 const g = 9.81;
@@ -186,6 +190,12 @@ const dt = 0.1;
 
 let v0, angleDeg, t, v0x, v0y, vx, vy;
 const isAboveGround = groundPos.y - 25; // Condition to check mostly the ball postition.
+
+basketBall.on("dragmove", (e) => {
+
+  ballHorLine.position({ x: basketBall.x(), y: basketBall.y() });
+  ballVerLine.position({ x: basketBall.x(), y: basketBall.y() });
+});
 
 basketBall.on("click", () => {
   if (!isBallMoving) {
@@ -231,7 +241,7 @@ function animate() {
 
   ballTrail.points(ballTrail.points().concat([x, y]));
 
-  const velocityThreshold = 3; 
+  const velocityThreshold = 3;
   if (y <= isAboveGround && Math.abs(vx) > velocityThreshold) {
     animationFrameId = requestAnimationFrame(animate);
   } else {
@@ -242,19 +252,20 @@ function animate() {
   layer.batchDraw();
 }
 
-
 // Slider event listeners
-document.getElementById('velocity-slider').addEventListener('input', (event) => {
+document
+  .getElementById("velocity-slider")
+  .addEventListener("input", (event) => {
     v0 = parseFloat(event.target.value);
-    document.getElementById('velocity-value').textContent = v0;
+    document.getElementById("velocity-value").textContent = v0;
+  });
+
+document.getElementById("gravity-slider").addEventListener("input", (event) => {
+  g = parseFloat(event.target.value);
+  document.getElementById("gravity-value").textContent = g;
 });
 
-document.getElementById('gravity-slider').addEventListener('input', (event) => {
-    g = parseFloat(event.target.value);
-    document.getElementById('gravity-value').textContent = g;
-});
-
-document.getElementById('angle-slider').addEventListener('input', (event) => {
-    angleDeg = parseFloat(event.target.value);
-    document.getElementById('angle-value').textContent = angleDeg;
+document.getElementById("angle-slider").addEventListener("input", (event) => {
+  angleDeg = parseFloat(event.target.value);
+  document.getElementById("angle-value").textContent = angleDeg;
 });
