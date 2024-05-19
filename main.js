@@ -76,6 +76,7 @@ const basketBall = new Konva.Circle({
   },
 });
 
+
 const ballHorLine = new Konva.Line({
   points: [-25, 0, 25, 0],
   x: basketBall.x(),
@@ -151,9 +152,20 @@ stage.add(layer);
 let prevPointerPosition = { x: 0, y: 0 };
 let animationFrameId;
 
+stage.on("pointermove", () => {
+  prevPointerPosition = stage.getPointerPosition();
+});
+
 stage.on("dragmove", () => {
-  console.log("draggin STAGE");
-  const offsetX = stage.x() - stagePosition.x;
+  const currentPointerPosition = stage.getPointerPosition();
+  // console.log(currentPointerPosition);
+  // const offsetX = stage.x() - stagePosition.x;
+  console.log(ground.y())
+  const offsetX = currentPointerPosition.x - prevPointerPosition.x;
+  const offsetY = currentPointerPosition.y - prevPointerPosition.y;
+  stagePosition.x += offsetX;
+  stagePosition.y += offsetY;
+  
   const newMinX = Math.min(...groundPoints.filter((_, i) => i % 2 === 0) ) - offsetX; 
   const newMaxX =Math.max(...groundPoints.filter((_, i) => i % 2 === 0)) - offsetX;
   groundPoints = [newMinX, 0, newMaxX, 0];
@@ -182,7 +194,7 @@ stage.on("dragmove", () => {
   rock.y(ground.y());
 
   layer.batchDraw();
-  // prevPointerPosition = currentPointerPosition;
+  prevPointerPosition = currentPointerPosition;
 });
 
 const g = 9.81;
@@ -191,8 +203,10 @@ const dt = 0.1;
 let v0, angleDeg, t, v0x, v0y, vx, vy;
 const isAboveGround = groundPos.y - 25; // Condition to check mostly the ball postition.
 
-basketBall.on("dragmove", (e) => {
-
+basketBall.on("dragmove", function() {
+  if(this.y() > groundPos.y - this.radius()) {
+    this.y(groundPos.y - this.radius());
+  }
   ballHorLine.position({ x: basketBall.x(), y: basketBall.y() });
   ballVerLine.position({ x: basketBall.x(), y: basketBall.y() });
 });
@@ -219,8 +233,6 @@ function animate() {
 
   let x = basketBall.x() + vx * dt;
   let y = basketBall.y() + vy * dt - 0.5 * g * dt * dt;
-
-  console.log(vx);
 
   if (y >= isAboveGround) {
     vy = -vy * 0.8; // Assuming 80% restitution
