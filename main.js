@@ -178,8 +178,8 @@ stage.on("dragmove", () => {
   prevPointerPosition = currentPointerPosition;
 });
 
-let v0 = 60;
-let angleDeg = 60;
+let v0 = 50;
+let angleDeg = 45;
 let g = 9.81;
 const dt = 0.1;
 
