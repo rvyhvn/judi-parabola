@@ -51,15 +51,30 @@ const basketBall = new Konva.Circle({
   },
 });
 
+const verLine = new Konva.Rect({
+    x: basketBall.x() - basketBall.radius() * 2,
+    y: basketBall.y() + basketBall.radius(),
+    width: basketBall.radius() * 4,
+    height: 0,
+    fill: 'red',
+    stroke: "red",
+    strokeWidth: 2,
+})
+
 basketBall.on("dragmove", function() {
     console.log("basketball dragged move")
     if(this.y() > groundPos.y - this.radius()) {
         this.y(groundPos.y - this.radius())
+    } else {
+        verLine.height(groundPos.y - this.y() - this.radius());
+        verLine.y(this.y() + this.radius());
+        verLine.x(this.x() - this.radius() * 2)
     }
+    layer.batchDraw();
 })
 
 layer.add(ground);
-layer.add(basketBall);
+layer.add(basketBall, verLine);
 stage.add(layer);
 
 let prevPointerPosition = { x: 0, y: 0 };

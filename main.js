@@ -93,6 +93,16 @@ const ballVerLine = new Konva.Line({
   strokeWidth: 1,
 });
 
+const tower = new Konva.Rect({
+  x: basketBall.x() - basketBall.radius() * 2,
+  y: basketBall.y() + basketBall.radius(),
+  width: basketBall.radius() * 4,
+  height: 0,
+  fill: '#c1752e',
+  // stroke: 'black',
+  strokeWidth: 2,
+})
+
 const ballTrail = new Konva.Line({
   stroke: "red",
   strokeWidth: 1,
@@ -146,6 +156,7 @@ createRandomClouds(100);
 layer.add(basketBall);
 layer.add(ballHorLine);
 layer.add(ballVerLine);
+layer.add(tower);
 stage.add(bgLayer);
 stage.add(layer);
 
@@ -206,9 +217,14 @@ const isAboveGround = groundPos.y - 25; // Condition to check mostly the ball po
 basketBall.on("dragmove", function() {
   if(this.y() > groundPos.y - this.radius()) {
     this.y(groundPos.y - this.radius());
+  } else {
+    ballHorLine.position({ x: basketBall.x(), y: basketBall.y() });
+    ballVerLine.position({ x: basketBall.x(), y: basketBall.y() });
+    tower.height(groundPos.y - this.y() - this.radius());
+    tower.y(this.y() + this.radius());
+    tower.x(this.x() - this.radius() * 2)
   }
-  ballHorLine.position({ x: basketBall.x(), y: basketBall.y() });
-  ballVerLine.position({ x: basketBall.x(), y: basketBall.y() });
+  layer.batchDraw()
 });
 
 basketBall.on("click", () => {
