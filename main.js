@@ -332,6 +332,7 @@ basketBall.on("dragmove", function () {
   tower.height(groundPos.y - this.y() - this.radius());
   tower.y(this.y() + this.radius());
   tower.x(this.x() - this.radius() * 2);
+  document.getElementById("y-value").textContent = (groundPos.y - basketBall.y() - basketBall.radius()).toFixed(2);
 
   if (this.y() < groundPos.y - this.radius()) {
     cannonBody.show();
@@ -346,6 +347,7 @@ basketBall.on("dragmove", function () {
     cannonBody.x(tire.x());
     cannonBody.y(tire.y() - 25);
     cannonBody.rotation(-document.getElementById("angle-slider").value);
+
   } else {
     cannonBody.hide();
     tire.hide();
@@ -403,6 +405,7 @@ tire.on("dragmove", function () {
     ballVerLine.position({ x: basketBall.x(), y: basketBall.y() });
     arrow.position({ x: basketBall.x(), y: basketBall.y() });
   }
+  document.getElementById("y-value").textContent = (groundPos.y - basketBall.y() - basketBall.radius()).toFixed(2);
 
   if (this.y() < groundPos.y - this.radius()) {
     cannonBody.show();
@@ -421,6 +424,7 @@ tire.on("dragmove", function () {
     cannonBody.y(this.y() - 25);
     ballHorLine.position({ x: basketBall.x(), y: basketBall.y() });
     ballVerLine.position({ x: basketBall.x(), y: basketBall.y() });
+
   } else {
     cannonBody.hide();
     this.hide();
