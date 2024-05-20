@@ -462,6 +462,7 @@ cannonBody.on("click", () => {
 function animate() {
   if (!isBallMoving) return;
 
+  
   let x = basketBall.x() + vx * dt;
   let y = basketBall.y() - vy * dt + 0.5 * g * dt * dt;
 
@@ -499,11 +500,15 @@ function animate() {
 
   const velocityThreshold = 0.1;
   if (y <= isAboveGround && Math.abs(vx) > velocityThreshold) {
+    basketBall.draggable(false);
+    tire.draggable(false);  
     toggleSliders(true);
     animationFrameId = requestAnimationFrame(animate);
   } else {
     isBallMoving = false;
     cancelAnimationFrame(animationFrameId);
+    basketBall.draggable(true);
+    tire.draggable(true);  
     toggleSliders(false);
   }
   layer.batchDraw();
