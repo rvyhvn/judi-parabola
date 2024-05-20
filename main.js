@@ -490,7 +490,6 @@ function animate() {
     ballVerLine.rotation() + (angularVelocity * 180) / Math.PI
   );
 
-  ballTrail.points(ballTrail.points().concat([x, y]));
 
   // Update HTML legend
   document.getElementById("vx-value").textContent = vx.toFixed(2);
@@ -500,6 +499,8 @@ function animate() {
 
   const velocityThreshold = 0.1;
   if (y <= isAboveGround && Math.abs(vx) > velocityThreshold) {
+  ballTrail.points(ballTrail.points().concat([x, y]));
+
     basketBall.draggable(false);
     tire.draggable(false);  
     toggleSliders(true);
