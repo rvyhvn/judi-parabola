@@ -137,10 +137,10 @@ const innerTire = new Konva.Circle({
 });
 
 const cannonBody = new Konva.Rect({
-  x: tire.x() ,
-  y: tire.y() -  50,
-  width: 180,
-  height: 100,
+  x: tire.x(),
+  y: tire.y() + 50,
+  width: 120,
+  height: 90,
   fill: "grey",
   cornerRadius: [60, 0, 0, 60],
   rotation: 0,
@@ -295,7 +295,7 @@ basketBall.on("dragmove", function() {
     innerTire.x(tire.x());
     innerTire.y(tire.y());
     cannonBody.x(tire.x());
-    cannonBody.y(tire.y() -  50);
+    cannonBody.y(tire.y() -25);
 
     updateHeightSlider();
   }
@@ -315,6 +315,18 @@ basketBall.on("click", () => {
   }
 });
 
+cannonBody.on("click", () => {
+  if (!isBallMoving) {
+    isBallMoving = true;
+    t = 0;
+    const angleRad = (angleDeg * Math.PI) / 180;
+    v0x = v0 * Math.cos(angleRad);
+    v0y = v0 * Math.sin(angleRad);
+    vx = v0x;
+    vy = v0y;
+    animate();
+  }
+})
 layer.add(ballTrail);
 
 function animate() {
