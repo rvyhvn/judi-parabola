@@ -507,6 +507,8 @@ function animate() {
   } else {
     isBallMoving = false;
     cancelAnimationFrame(animationFrameId);
+    document.getElementById("vx-value").textContent = 0;
+    document.getElementById("vy-value").textContent = 0;          
     basketBall.draggable(true);
     tire.draggable(true);  
     toggleSliders(false);
