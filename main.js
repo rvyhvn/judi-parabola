@@ -13,7 +13,7 @@ let isBallMoving = false;
 const stage = new Konva.Stage({
   container: "container",
   width: width,
-  height: height - 50,
+  height: height,
   x: stagePosition.x,
   y: stagePosition.y,
   scaleX: stageScale,
@@ -136,7 +136,6 @@ function createCloud(x, y) {
     cloudGroup.add(cloudPart);
   });
 
-  return cloudGroup;
   return cloudGroup;
 }
 
@@ -275,7 +274,11 @@ function animate() {
   ballTrail.points(ballTrail.points().concat([x, y]));
 
   const velocityThreshold = 3;
-  if (y <= isAboveGround && Math.abs(vx) > velocityThreshold) {
+  if (
+    y <= isAboveGround 
+    && Math.abs(vx) > velocityThreshold
+    ) 
+    {
     animationFrameId = requestAnimationFrame(animate);
   } else {
     isBallMoving = false;
@@ -300,5 +303,3 @@ document.getElementById('angle-slider').addEventListener('input', (event) => {
   angleDeg = parseFloat(event.target.value);
   document.getElementById('angle-value').textContent = angleDeg;
 });
-
-layer.batchDraw()
