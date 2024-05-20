@@ -517,6 +517,7 @@ function animate() {
   } else {
     isBallMoving = false;
     cancelAnimationFrame(animationFrameId);
+    arrow.hide();
     document.getElementById("vx-value").textContent = 0;
     document.getElementById("vy-value").textContent = 0;
     basketBall.draggable(true);
@@ -525,6 +526,8 @@ function animate() {
     cannonBody.hide();
     tire.hide();
     innerTire.hide();
+    arrow.position({x: basketBall.x(), y: basketBall.y()});
+    arrow.show();
     toggleSliders(false);
   }
   layer.batchDraw();
