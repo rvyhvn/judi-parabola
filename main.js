@@ -222,7 +222,8 @@ basketBall.on("dragmove", function() {
     ballVerLine.position({ x: basketBall.x(), y: basketBall.y() });
     tower.height(groundPos.y - this.y() - this.radius());
     tower.y(this.y() + this.radius());
-    tower.x(this.x() - this.radius() * 2)
+    tower.x(this.x() - this.radius() * 2);
+    updateHeightSlider();
   }
   layer.batchDraw()
 });
@@ -287,6 +288,26 @@ function animate() {
 
   layer.batchDraw();
 }
+
+const heightSlider = document.getElementById('height-slider');
+const heightValDisplay = document.getElementById('height-value')
+
+function updateHeightSlider() {
+  const ballHeight = groundPos.y - basketBall.y() - basketBall.radius();
+  heightSlider.value = ballHeight;
+  heightValueDisplay.textContent = ballHeight;
+}
+
+// Update ball's position based on slider value
+heightSlider.addEventListener('input', (event) => {
+  const newHeight = parseFloat(event.target.value);
+  basketBall.y(groundPos.y - newHeight - basketBall.radius());
+  ballHorLine.position({ x: basketBall.x(), y: basketBall.y() });
+  ballVerLine.position({ x: basketBall.x(), y: basketBall.y() });
+  tower.height(newHeight);
+  tower.y(groundPos.y - newHeight);
+  layer.batchDraw();
+});
 
 // Slider event listeners
 document.getElementById('velocity-slider').addEventListener('input', (event) => {
