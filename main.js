@@ -391,6 +391,7 @@ heightSlider.addEventListener('input', (event) => {
   ballVerLine.position({ x: basketBall.x(), y: basketBall.y() });
   tower.height(newHeight);
   tower.y(groundPos.y - newHeight);
+  tower.x(basketBall.x() - basketBall.radius() * 2);
   layer.batchDraw();
 });
 
