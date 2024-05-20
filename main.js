@@ -10,6 +10,14 @@ let groundPos = { x: 0, y: 200 };
 let ballPosition = { x: -650, y: groundPos.y - 25 };
 let isBallMoving = false;
 
+let v0 = 50;
+let angleDeg = 45;
+let g = 9.81;
+const dt = 0.1;
+
+let t, v0x, v0y, vx, vy;
+const isAboveGround = groundPos.y - 25;
+
 const stage = new Konva.Stage({
   container: "container",
   width: width,
@@ -19,11 +27,11 @@ const stage = new Konva.Stage({
   scaleX: stageScale,
   scaleY: stageScale,
   draggable: true,
-  dragBoundFunc: function(pos) {
+  dragBoundFunc: function (pos) {
     stagePosition.x += pos.x - stage.x();
-    stagePosition.y += pos.y -stage.y();
+    stagePosition.y += pos.y - stage.y();
     return pos;
-  }
+  },
 });
 
 const layer = new Konva.Layer();
@@ -76,7 +84,6 @@ const basketBall = new Konva.Circle({
   },
 });
 
-
 const ballHorLine = new Konva.Line({
   points: [-25, 0, 25, 0],
   x: basketBall.x(),
@@ -98,9 +105,9 @@ const tower = new Konva.Rect({
   y: basketBall.y() + basketBall.radius(),
   width: basketBall.radius() * 4,
   height: 0,
-  fill: '#c1752e',
+  fill: "#c1752e",
   strokeWidth: 2,
-})
+});
 
 const ballTrail = new Konva.Line({
   stroke: "red",
@@ -118,13 +125,12 @@ const tire = new Konva.Circle({
   fill: "black",
   radius: 35,
   draggable: true,
-  dragBoundFunc: function(pos) {
+  dragBoundFunc: function (pos) {
     return {
       x: this.getAbsolutePosition().x,
       y: pos.y,
-    }
-  }
-
+    };
+  },
 });
 
 const innerTire = new Konva.Circle({
@@ -148,7 +154,6 @@ const cannonBody = new Konva.Rect({
   offsetY: 50,
 });
 
-// Create legend
 const legendGroup = new Konva.Group({
   x: width - 150,
   y: height - 100,
@@ -157,46 +162,46 @@ const legendGroup = new Konva.Group({
 const legendBackground = new Konva.Rect({
   width: 150,
   height: 100,
-  fill: 'cyan',
+  fill: "cyan",
   opacity: 0.5,
 });
 
 const vxText = new Konva.Text({
   x: 5,
   y: 5,
-  text: 'vx: 0',
+  text: "vx: 0",
   fontSize: 16,
-  fill: 'black',
+  fill: "black",
 });
 
 const vyText = new Konva.Text({
   x: 5,
   y: 25,
-  text: 'vy: 0',
+  text: "vy: 0",
   fontSize: 16,
-  fill: 'black',
+  fill: "black",
 });
 
 const xText = new Konva.Text({
   x: 5,
   y: 45,
-  text: 'x: 0',
+  text: "x: 0",
   fontSize: 16,
-  fill: 'black',
+  fill: "black",
 });
 
 const yText = new Konva.Text({
   x: 5,
   y: 65,
-  text: 'y: 0',
+  text: "y: 0",
   fontSize: 16,
-  fill: 'black',
+  fill: "black",
 });
 
 function createCloud(x, y) {
   const cloudGroup = new Konva.Group({
     x: x,
-    y: y * - 2,
+    y: y * -2,
   });
 
   const ellipses = [
@@ -238,20 +243,9 @@ const arrow = new Konva.Arrow({
   points: [0, 0, 75, 0],
   pointerLength: 10,
   pointerWidth: 10,
-  fill: 'black',
-  stroke: 'black',
+  fill: "black",
+  stroke: "black",
   rotation: -initialAngle,
-});
-
-document.getElementById('angle-slider').value = initialAngle;
-document.getElementById('angle-value').textContent = initialAngle;
-
-document.getElementById('angle-slider').addEventListener('input', (event) => {
-  angleDeg = parseFloat(event.target.value);
-  document.getElementById('angle-value').textContent = angleDeg;
-  
-  arrow.rotation(-angleDeg);
-  layer.batchDraw();
 });
 
 legendGroup.add(legendBackground, vxText, vyText, xText, yText);
@@ -260,10 +254,12 @@ layer.add(ground);
 bgLayer.add(sky, dirt, rock);
 createRandomClouds(100);
 layer.add(arrow);
+layer.add(ballTrail);
 layer.add(basketBall);
 layer.add(ballHorLine);
 layer.add(ballVerLine);
 layer.add(tower);
+layer.add(cannonBody, tire, innerTire);
 stage.add(bgLayer);
 stage.add(layer);
 
@@ -280,9 +276,11 @@ stage.on("dragmove", () => {
   const offsetY = currentPointerPosition.y - prevPointerPosition.y;
   stagePosition.x += offsetX;
   stagePosition.y += offsetY;
-  
-  const newMinX = Math.min(...groundPoints.filter((_, i) => i % 2 === 0) ) - offsetX; 
-  const newMaxX =Math.max(...groundPoints.filter((_, i) => i % 2 === 0)) - offsetX;
+
+  const newMinX =
+    Math.min(...groundPoints.filter((_, i) => i % 2 === 0)) - offsetX;
+  const newMaxX =
+    Math.max(...groundPoints.filter((_, i) => i % 2 === 0)) - offsetX;
   groundPoints = [newMinX, 0, newMaxX, 0];
   stagePosition.x = stage.x();
   stagePosition.y = stage.y();
@@ -312,115 +310,7 @@ stage.on("dragmove", () => {
   prevPointerPosition = currentPointerPosition;
 });
 
-// tire.on("dragmove", function() {
-//   if (this.y() > groundPos.y - this.radius()) {
-//     this.hide();
-//     cannonBody.hide();
-//     innerTire.hide();
-//     basketBall.x(this.x());
-//     basketBall.y(this.y() + 10);
-//     tower.height(groundPos.y - basketBall.y() - basketBall.radius())
-//     tower.x(basketBall.x() - basketBall.radius() * 2);
-//     tower.y(basketBall.y() + basketBall.radius());
-//     ballHorLine.position({ x: basketBall.x(), y: basketBall.y() });
-//     ballVerLine.position({ x: basketBall.x(), y: basketBall.y() });
-
-//   } else {
-//     this.show();
-//     cannonBody.show();
-//     innerTire.show();
-//     basketBall.x(this.x());
-//     basketBall.y(this.y() + 10);
-//     tower.height(groundPos.y - basketBall.y() - basketBall.radius())
-//     tower.x(basketBall.x() - basketBall.radius() * 2);
-//     tower.y(basketBall.y() + basketBall.radius());
-//     innerTire.x(this.x());
-//     innerTire.y(this.y());
-//     cannonBody.x(this.x());
-//     cannonBody.y(this.y() - 25);
-//     ballHorLine.position({ x: basketBall.x(), y: basketBall.y() });
-//     ballVerLine.position({ x: basketBall.x(), y: basketBall.y() });
-//   }
-//   updateHeightSlider();
-// });
-
-tire.on("dragstart", function() {
-  if (this.y() < groundPos.y - this.radius()) {
-    cannonBody.show();
-    this.show();
-    innerTire.show();
-    arrow.hide();
-  }
-  layer.batchDraw();
-});
-
-tire.on("dragmove", function() {
-  if (this.y() > groundPos.y - this.radius()) {
-    this.y(groundPos.y - this.radius());
-    basketBall.y(groundPos.y - basketBall.radius());
-    tower.height(groundPos.y - basketBall.y() - basketBall.radius());
-    tower.x(basketBall.x() - basketBall.radius() * 2);
-    tower.y(basketBall.y() + basketBall.radius());
-    ballHorLine.position({ x: basketBall.x(), y: basketBall.y() });
-    ballVerLine.position({ x: basketBall.x(), y: basketBall.y() });
-  }
-
-  if (this.y() < groundPos.y - this.radius()) {
-    cannonBody.show();
-    this.show();
-    innerTire.show();
-    arrow.hide();
-    basketBall.x(this.x());
-    basketBall.y(this.y() + 10);
-    tower.height(groundPos.y - basketBall.y() - basketBall.radius());
-    tower.x(basketBall.x() - basketBall.radius() * 2);
-    tower.y(basketBall.y() + basketBall.radius());
-    innerTire.x(this.x());
-    innerTire.y(this.y());
-    cannonBody.x(this.x());
-    cannonBody.y(this.y() - 25);
-    ballHorLine.position({ x: basketBall.x(), y: basketBall.y() });
-    ballVerLine.position({ x: basketBall.x(), y: basketBall.y() });
-
-  } else {
-    cannonBody.hide();
-    this.hide();
-    innerTire.hide();
-    arrow.show();
-  }
-  updateHeightSlider();
-  layer.batchDraw();
-})
-
-tire.on("dragend", function() {
-  if (this.y() < groundPos.y - this.radius()) {
-    cannonBody.show();
-    this.show();
-    innerTire.show();
-    arrow.hide();
-  }
-  layer.batchDraw();
-})
-
-cannonBody.on("wheel", (e) => {
-e.evt.preventDefault();
-
-let newRotation = cannonBody.rotation() + (e.evt.deltaY > 0 ? 5 : -5);
-newRotation = Math.max(-90, Math.min(90, newRotation));
-cannonBody.rotation(newRotation);
-});
-
-let v0 = 50;
-let angleDeg = 45;
-let g = 9.81;
-const dt = 0.1;
-
-let t, v0x, v0y, vx, vy;
-const isAboveGround = groundPos.y - 25; 
-
-layer.add(cannonBody, tire, innerTire);
-
-basketBall.on("dragstart", function() {
+basketBall.on("dragstart", function () {
   if (this.y() < groundPos.y - this.radius()) {
     cannonBody.show();
     tire.show();
@@ -428,10 +318,9 @@ basketBall.on("dragstart", function() {
     arrow.hide();
   }
   layer.batchDraw();
+});
 
-})
-
-basketBall.on("dragmove", function() {
+basketBall.on("dragmove", function () {
   if (this.y() > groundPos.y - this.radius()) {
     this.y(groundPos.y - this.radius());
   }
@@ -459,21 +348,20 @@ basketBall.on("dragmove", function() {
     innerTire.hide();
     arrow.show();
   }
-    updateHeightSlider();
+  updateHeightSlider();
 
   layer.batchDraw();
 });
 
-basketBall.on("dragend", function() {
+basketBall.on("dragend", function () {
   if (this.y() < groundPos.y - this.radius()) {
     cannonBody.show();
     tire.show();
     innerTire.show();
-    arrow.hide()
+    arrow.hide();
   }
   layer.batchDraw();
-
-})
+});
 
 basketBall.on("click", () => {
   if (!isBallMoving) {
@@ -488,6 +376,71 @@ basketBall.on("click", () => {
   }
 });
 
+tire.on("dragstart", function () {
+  if (this.y() < groundPos.y - this.radius()) {
+    cannonBody.show();
+    this.show();
+    innerTire.show();
+    arrow.hide();
+  }
+  layer.batchDraw();
+});
+
+tire.on("dragmove", function () {
+  if (this.y() > groundPos.y - this.radius()) {
+    this.y(groundPos.y - this.radius());
+    basketBall.y(groundPos.y - basketBall.radius());
+    tower.height(groundPos.y - basketBall.y() - basketBall.radius());
+    tower.x(basketBall.x() - basketBall.radius() * 2);
+    tower.y(basketBall.y() + basketBall.radius());
+    ballHorLine.position({ x: basketBall.x(), y: basketBall.y() });
+    ballVerLine.position({ x: basketBall.x(), y: basketBall.y() });
+  }
+
+  if (this.y() < groundPos.y - this.radius()) {
+    cannonBody.show();
+    this.show();
+    innerTire.show();
+    arrow.hide();
+    basketBall.x(this.x());
+    basketBall.y(this.y() + 10);
+    tower.height(groundPos.y - basketBall.y() - basketBall.radius());
+    tower.x(basketBall.x() - basketBall.radius() * 2);
+    tower.y(basketBall.y() + basketBall.radius());
+    innerTire.x(this.x());
+    innerTire.y(this.y());
+    cannonBody.x(this.x());
+    cannonBody.y(this.y() - 25);
+    ballHorLine.position({ x: basketBall.x(), y: basketBall.y() });
+    ballVerLine.position({ x: basketBall.x(), y: basketBall.y() });
+  } else {
+    cannonBody.hide();
+    this.hide();
+    innerTire.hide();
+    arrow.show();
+  }
+  updateHeightSlider();
+  layer.batchDraw();
+});
+
+tire.on("dragend", function () {
+  if (this.y() < groundPos.y - this.radius()) {
+    cannonBody.show();
+    this.show();
+    innerTire.show();
+    arrow.hide();
+  }
+  layer.batchDraw();
+});
+
+cannonBody.on("wheel", (e) => {
+  e.evt.preventDefault();
+
+  let newRotation = cannonBody.rotation() + (e.evt.deltaY > 0 ? 5 : -5);
+  newRotation = Math.max(-90, Math.min(90, newRotation));
+  cannonBody.rotation(newRotation);
+});
+
 cannonBody.on("click", () => {
   if (!isBallMoving) {
     isBallMoving = true;
@@ -499,8 +452,7 @@ cannonBody.on("click", () => {
     vy = v0y;
     animate();
   }
-})
-layer.add(ballTrail);
+});
 
 // Update legend during animation
 function animate() {
@@ -510,8 +462,8 @@ function animate() {
   let y = basketBall.y() - vy * dt + 0.5 * g * dt * dt;
 
   if (y >= isAboveGround) {
-    vy = -vy * 0.8; // Assuming 80% restitution
-    vx *= 0.9; // Assuming 90% horizontal velocity retention
+    vy = -vy * 0.8;
+    vx *= 0.9;
     y = isAboveGround;
   }
 
@@ -522,24 +474,26 @@ function animate() {
   const rotationAngle = Math.atan2(vy, vx);
   basketBall.rotation((rotationAngle * 180) / Math.PI);
 
-  // Update posisi dan rotasi garis horizontal dan vertikal sesuai rotasi bola
   ballHorLine.position({ x: basketBall.x(), y: basketBall.y() });
   ballVerLine.position({ x: basketBall.x(), y: basketBall.y() });
 
-  // Kecepatan sudut (rad/s) dihitung dari kecepatan linear (vx, vy) dan radius bola (25)
   const angularVelocity = (Math.sqrt(vx * vx + vy * vy) / 25) * dt;
-  ballHorLine.rotation(ballHorLine.rotation() + (angularVelocity * 180) / Math.PI);
-  ballVerLine.rotation(ballVerLine.rotation() + (angularVelocity * 180) / Math.PI);
+  ballHorLine.rotation(
+    ballHorLine.rotation() + (angularVelocity * 180) / Math.PI
+  );
+  ballVerLine.rotation(
+    ballVerLine.rotation() + (angularVelocity * 180) / Math.PI
+  );
 
   ballTrail.points(ballTrail.points().concat([x, y]));
 
   // Update HTML legend
-  document.getElementById('vx-value').textContent = vx.toFixed(2);
-  document.getElementById('vy-value').textContent = vy.toFixed(2);
-  document.getElementById('x-value').textContent = x.toFixed(2);
-  document.getElementById('y-value').textContent = y.toFixed(2);
+  document.getElementById("vx-value").textContent = vx.toFixed(2);
+  document.getElementById("vy-value").textContent = vy.toFixed(2);
+  document.getElementById("x-value").textContent = x.toFixed(2);
+  document.getElementById("y-value").textContent = y.toFixed(2);
 
-  const velocityThreshold = 3;
+  const velocityThreshold = 0.1;
   if (y <= isAboveGround && Math.abs(vx) > velocityThreshold) {
     animationFrameId = requestAnimationFrame(animate);
   } else {
@@ -549,8 +503,8 @@ function animate() {
   layer.batchDraw();
 }
 
-const heightSlider = document.getElementById('height-slider');
-const heightValDisplay = document.getElementById('height-value')
+const heightSlider = document.getElementById("height-slider");
+const heightValDisplay = document.getElementById("height-value");
 
 function updateHeightSlider() {
   const ballHeight = groundPos.y - basketBall.y() - basketBall.radius();
@@ -558,7 +512,7 @@ function updateHeightSlider() {
   heightValDisplay.textContent = ballHeight;
 }
 
-heightSlider.addEventListener('input', (event) => {
+heightSlider.addEventListener("input", (event) => {
   const newHeight = parseFloat(event.target.value);
   if (newHeight === 0) {
     tire.remove();
@@ -567,7 +521,7 @@ heightSlider.addEventListener('input', (event) => {
   } else {
     layer.add(cannonBody, tire, innerTire);
   }
-  document.getElementById('height-value').textContent = newHeight;
+  document.getElementById("height-value").textContent = newHeight;
   basketBall.y(groundPos.y - newHeight - basketBall.radius());
   ballHorLine.position({ x: basketBall.x(), y: basketBall.y() });
   ballVerLine.position({ x: basketBall.x(), y: basketBall.y() });
@@ -579,30 +533,42 @@ heightSlider.addEventListener('input', (event) => {
   innerTire.x(tire.x());
   innerTire.y(tire.y());
   cannonBody.x(tire.x());
-  cannonBody.y(tire.y() - 25);  
+  cannonBody.y(tire.y() - 25);
   arrow.position({ x: basketBall.x(), y: basketBall.y() });
   layer.batchDraw();
 });
 
 // Slider event listeners
-document.getElementById('velocity-slider').addEventListener('input', (event) => {
-  v0 = parseFloat(event.target.value);
-  document.getElementById('velocity-value').textContent = v0;
-  animate(); // Panggil fungsi animate setelah mengatur slider
-  
-  // Menghitung panjang baru panah
-  const newLength = v0 * 1.5; // Sesuaikan faktor scaling sesuai kebutuhan
-  arrow.points([0, 0, newLength, 0]); // Mengatur panjang baru pada panah
-  layer.batchDraw(); // Memperbarui tampilan
-});
+document
+  .getElementById("velocity-slider")
+  .addEventListener("input", (event) => {
+    v0 = parseFloat(event.target.value);
+    document.getElementById("velocity-value").textContent = v0;
+    animate(); // Panggil fungsi animate setelah mengatur slider
 
-document.getElementById('gravity-slider').addEventListener('input', (event) => {
+    // Menghitung panjang baru panah
+    const newLength = v0 * 1.5; // Sesuaikan faktor scaling sesuai kebutuhan
+    arrow.points([0, 0, newLength, 0]); // Mengatur panjang baru pada panah
+    layer.batchDraw(); // Memperbarui tampilan
+  });
+
+document.getElementById("gravity-slider").addEventListener("input", (event) => {
   g = parseFloat(event.target.value);
-  document.getElementById('gravity-value').textContent = g;
+  document.getElementById("gravity-value").textContent = g;
 });
 
-document.getElementById('angle-slider').addEventListener('input', (event) => {
+document.getElementById("angle-slider").addEventListener("input", (event) => {
   angleDeg = parseFloat(event.target.value);
-  document.getElementById('angle-value').textContent = angleDeg;
+  document.getElementById("angle-value").textContent = angleDeg;
 });
 
+document.getElementById("angle-slider").value = initialAngle;
+document.getElementById("angle-value").textContent = initialAngle;
+
+document.getElementById("angle-slider").addEventListener("input", (event) => {
+  angleDeg = parseFloat(event.target.value);
+  document.getElementById("angle-value").textContent = angleDeg;
+
+  arrow.rotation(-angleDeg);
+  layer.batchDraw();
+});
