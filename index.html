@@ -1,30 +1,67 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Parabola Movement</title>
     <link rel="stylesheet" href="styles.css" />
-</head>
-<body>
+  </head>
+  <body>
     <div id="container"></div>
     <div class="slider-container">
-        <label class="slider-label" for="velocity-slider">Initial Velocity (v0): <span id="velocity-value">50</span></label>
-        <input type="range" id="velocity-slider" class="slider" min="0" max="200" value="50" />
-        <label class="slider-label" for="gravity-slider">Gravity (g): <span id="gravity-value">9.81</span></label>
-        <input type="range" id="gravity-slider" class="slider" min="0" max="50" step="0.01" value="9.81" />
-        <label class="slider-label" for="angle-slider">Angle (degrees): <span id="angle-value">45</span></label>
-        <input type="range" id="angle-slider" class="slider" min="0" max="90" value="45" />
-        <label class="slider-label" for="height-slider">Initial Height: <span id="height-value">0</span></label>
-        <input type="range" id="height-slider" class="slider" min="0" max="1000" value="0" />
+      <label class="slider-label" for="velocity-slider"
+        >Initial Velocity (v0): <span id="velocity-value">50</span></label
+      >
+      <input
+        type="range"
+        id="velocity-slider"
+        class="slider"
+        min="0"
+        max="200"
+        value="50"
+      />
+      <label class="slider-label" for="gravity-slider"
+        >Gravity (g): <span id="gravity-value">9.81</span></label
+      >
+      <input
+        type="range"
+        id="gravity-slider"
+        class="slider"
+        min="0"
+        max="50"
+        step="0.01"
+        value="9.81"
+      />
+      <label class="slider-label" for="angle-slider"
+        >Angle (degrees): <span id="angle-value">45</span></label
+      >
+      <input
+        type="range"
+        id="angle-slider"
+        class="slider"
+        min="0"
+        max="90"
+        value="45"
+      />
+      <label class="slider-label" for="height-slider"
+        >Initial Height: <span id="height-value">0</span></label
+      >
+      <input
+        type="range"
+        id="height-slider"
+        class="slider"
+        min="0"
+        max="1000"
+        value="0"
+      />
     </div>
     <div id="legend">
-        <div>Kecepatan Horizontal (vx): <span id="vx-value">0</span></div>
-        <div>Kecepatan Vertikal (vy): <span id="vy-value">0</span></div>
-        <div>Posisi Horizontal (x): <span id="x-value">0</span></div>
-        <div>Posisi Vertikal (y): <span id="y-value">0</span></div>
-      </div>
+      <div>Kecepatan Horizontal (vx): <span id="vx-value">0</span></div>
+      <div>Kecepatan Vertikal (vy): <span id="vy-value">0</span></div>
+      <div>Posisi Horizontal (x): <span id="x-value">0</span></div>
+      <div>Posisi Vertikal (y): <span id="y-value">0</span></div>
+    </div>
     <script type="module" src="/main.js"></script>
-</body>
+  </body>
 </html>

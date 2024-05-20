@@ -327,6 +327,7 @@ basketBall.on("dragmove", function () {
 
   ballHorLine.position({ x: basketBall.x(), y: basketBall.y() });
   ballVerLine.position({ x: basketBall.x(), y: basketBall.y() });
+  arrow.position({x: this.x(), y: this.y()})
   tower.height(groundPos.y - this.y() - this.radius());
   tower.y(this.y() + this.radius());
   tower.x(this.x() - this.radius() * 2);
@@ -372,6 +373,7 @@ basketBall.on("click", () => {
     v0y = v0 * Math.sin(angleRad);
     vx = v0x;
     vy = v0y;
+    toggleSliders(true);
     animate();
   }
 });
@@ -395,6 +397,7 @@ tire.on("dragmove", function () {
     tower.y(basketBall.y() + basketBall.radius());
     ballHorLine.position({ x: basketBall.x(), y: basketBall.y() });
     ballVerLine.position({ x: basketBall.x(), y: basketBall.y() });
+    arrow.position({x: basketBall.x(), y: basketBall.y()})
   }
 
   if (this.y() < groundPos.y - this.radius()) {
@@ -450,6 +453,7 @@ cannonBody.on("click", () => {
     v0y = v0 * Math.sin(angleRad);
     vx = v0x;
     vy = v0y;
+    toggleSliders(true);
     animate();
   }
 });
@@ -495,10 +499,12 @@ function animate() {
 
   const velocityThreshold = 0.1;
   if (y <= isAboveGround && Math.abs(vx) > velocityThreshold) {
+    toggleSliders(true);
     animationFrameId = requestAnimationFrame(animate);
   } else {
     isBallMoving = false;
     cancelAnimationFrame(animationFrameId);
+    toggleSliders(false);
   }
   layer.batchDraw();
 }
@@ -512,14 +518,26 @@ function updateHeightSlider() {
   heightValDisplay.textContent = ballHeight;
 }
 
+function toggleSliders(isDisabled) {
+  const sliders = document.querySelectorAll('.slider');
+  sliders.forEach(slider => {
+    slider.disabled = isDisabled;
+  })
+}
+
 heightSlider.addEventListener("input", (event) => {
   const newHeight = parseFloat(event.target.value);
   if (newHeight === 0) {
-    tire.remove();
-    innerTire.remove();
-    cannonBody.remove();
+    tire.hide();
+    innerTire.hide();
+    cannonBody.hide();
+    arrow.show();
   } else {
-    layer.add(cannonBody, tire, innerTire);
+    // layer.add(cannonBody, tire, innerTire);
+    cannonBody.show()
+    tire.show();
+    innerTire.show()
+    arrow.hide();
   }
   document.getElementById("height-value").textContent = newHeight;
   basketBall.y(groundPos.y - newHeight - basketBall.radius());
