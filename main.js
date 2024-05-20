@@ -205,7 +205,7 @@ const arrow = new Konva.Arrow({
   rotation: -initialAngle,
 });
 
-layer.add(arrow);
+
 
 document.getElementById('angle-slider').value = initialAngle;
 document.getElementById('angle-value').textContent = initialAngle;
@@ -218,12 +218,12 @@ document.getElementById('angle-slider').addEventListener('input', (event) => {
   layer.batchDraw();
 });
 
-
 legendGroup.add(legendBackground, vxText, vyText, xText, yText);
 layer.add(legendGroup);
 layer.add(ground);
 bgLayer.add(sky, dirt, rock);
 createRandomClouds(100);
+layer.add(arrow);
 layer.add(basketBall);
 layer.add(ballHorLine);
 layer.add(ballVerLine);
@@ -358,7 +358,6 @@ function animate() {
     isBallMoving = false;
     cancelAnimationFrame(animationFrameId);
   }
-
   layer.batchDraw();
 }
 
@@ -371,7 +370,6 @@ function updateHeightSlider() {
   heightValDisplay.textContent = ballHeight;
 }
 
-// Update ball's position based on slider value
 heightSlider.addEventListener('input', (event) => {
   const newHeight = parseFloat(event.target.value);
   basketBall.y(groundPos.y - newHeight - basketBall.radius());
@@ -379,14 +377,26 @@ heightSlider.addEventListener('input', (event) => {
   ballVerLine.position({ x: basketBall.x(), y: basketBall.y() });
   tower.height(newHeight);
   tower.y(groundPos.y - newHeight);
+
+  // Update arrow position based on ball position
+  arrow.position({ x: basketBall.x(), y: basketBall.y() });
+
   layer.batchDraw();
 });
+
 
 // Slider event listeners
 document.getElementById('velocity-slider').addEventListener('input', (event) => {
   v0 = parseFloat(event.target.value);
   document.getElementById('velocity-value').textContent = v0;
+  animate(); // Panggil fungsi animate setelah mengatur slider
+  
+  // Menghitung panjang baru panah
+  const newLength = v0 * 1.5; // Sesuaikan faktor scaling sesuai kebutuhan
+  arrow.points([0, 0, newLength, 0]); // Mengatur panjang baru pada panah
+  layer.batchDraw(); // Memperbarui tampilan
 });
+
 
 document.getElementById('gravity-slider').addEventListener('input', (event) => {
   g = parseFloat(event.target.value);
@@ -397,3 +407,4 @@ document.getElementById('angle-slider').addEventListener('input', (event) => {
   angleDeg = parseFloat(event.target.value);
   document.getElementById('angle-value').textContent = angleDeg;
 });
+
