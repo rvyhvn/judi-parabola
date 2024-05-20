@@ -7,8 +7,6 @@ let stageScale = 1;
 let stagePosition = { x: width / 2, y: height / 2 };
 let groundPoints = [-width, 0, width, 0];
 let groundPos = { x: 0, y: 200 };
-let ballPosition = { x: -650, y: groundPos.y - 25 };
-let isBallMoving = false;
 
 const stage = new Konva.Stage({
   container: "container",
@@ -36,50 +34,67 @@ const ground = new Konva.Line({
   y: 200,
 });
 
-const basketBall = new Konva.Circle({
-  x: ballPosition.x,
-  y: ballPosition.y,
-  radius: 25,
+const tire = new Konva.Circle({
+  x: -200,
+  y: stagePosition.y / 2,
+  strokeWidth: 2,
   stroke: "black",
-  fill: "orange",
+  fill: "black",
+  radius: 35,
   draggable: true,
-  dragBoundFunc: function (pos) {
+  dragBoundFunc: function(pos) {
     return {
       x: this.getAbsolutePosition().x,
-    y: pos.y,
-    };
-  },
+      y: pos.y,
+    }
+  }
+
 });
 
-const verLine = new Konva.Rect({
-    x: basketBall.x() - basketBall.radius() * 2,
-    y: basketBall.y() + basketBall.radius(),
-    width: basketBall.radius() * 4,
-    height: 0,
-    fill: 'red',
-    stroke: "red",
-    strokeWidth: 2,
-})
+const innerTire = new Konva.Circle({
+  x: tire.x(),
+  y: tire.y(),
+  strokeWidth: 0.5,
+  stroke: "blue",
+  fill: "blue",
+  radius: 15,
+});
 
-basketBall.on("dragmove", function() {
-    console.log("basketball dragged move")
-    if(this.y() > groundPos.y - this.radius()) {
-        this.y(groundPos.y - this.radius())
-    } else {
-        verLine.height(groundPos.y - this.y() - this.radius());
-        verLine.y(this.y() + this.radius());
-        verLine.x(this.x() - this.radius() * 2)
-    }
-    layer.batchDraw();
-})
+const cannonBody = new Konva.Rect({
+  x: tire.x() ,
+  y: tire.y() -  50,
+  width: 180,
+  height: 100,
+  fill: "grey",
+  cornerRadius: [60, 0, 0, 60],
+  rotation: 0,
+  offsetX: 35,
+  offsetY: 50,
+});
+
+
+tire.on("dragmove", function() {
+    console.log(`ball: ${this.x(), this.y()}, cannonBody: ${cannonBody.x(), cannonBody.y()}`)
+    innerTire.x(this.x());
+    innerTire.y(this.y());
+    cannonBody.x(this.x());
+    cannonBody.y(this.y() -  50);
+});
+
+cannonBody.on("wheel", (e) => {
+  e.evt.preventDefault();
+
+  let newRotation = cannonBody.rotation() + (e.evt.deltaY > 0 ? 5 : -5);
+  newRotation = Math.max(-90, Math.min(90, newRotation));
+  cannonBody.rotation(newRotation);
+  updateMuzzlePosition();
+});
 
 layer.add(ground);
-layer.add(basketBall, verLine);
+layer.add(cannonBody, tire, innerTire);
 stage.add(layer);
 
 let prevPointerPosition = { x: 0, y: 0 };
-let animationFrameId;
-
 
 stage.on("pointermove", () => {
   prevPointerPosition = stage.getPointerPosition();
@@ -94,7 +109,7 @@ stage.on("dragmove", () => {
 
   const newMinX =
     Math.min(...groundPoints.filter((_, i) => i % 2 === 0)) - offsetX;
-    const newMaxX =
+  const newMaxX =
     Math.max(...groundPoints.filter((_, i) => i % 2 === 0)) - offsetX;
   groundPoints = [newMinX, 0, newMaxX, 0];
   stagePosition.x = stage.x();
@@ -104,52 +119,3 @@ stage.on("dragmove", () => {
   layer.batchDraw();
   prevPointerPosition = currentPointerPosition;
 });
-
-const g = 9.81;
-const dt = 0.1;
-
-let v0, angleDeg, t, v0x, v0y, vx, vy;
-const isAboveGround = groundPos.y - 25; // Condition to check mostly the ball postition.
-
-basketBall.on("click", () => {
-  if (!isBallMoving) {
-    isBallMoving = true;
-    v0 = 60;
-    angleDeg = 60;
-    t = 0;
-    const angleRad = (angleDeg * Math.PI) / 180;
-    v0x = v0 * Math.cos(angleRad);
-    v0y = v0 * Math.sin(angleRad);
-    vx = v0x;
-    vy = v0y;
-    animate();
-  }
-});
-
-function animate() {
-  if (!isBallMoving) return;
-
-  let x = basketBall.x() + vx * dt;
-  let y = basketBall.y() + vy * dt - 0.5 * g * dt * dt;
-
-  if (y >= isAboveGround) {
-    vy = -vy * 0.8; // Assuming 80% restitution
-
-    vx *= 0.9; // Assuming 90% horizontal velocity retention
-    y = isAboveGround;
-  }
-
-  vy += g * dt;
-
-  basketBall.position({ x, y });
-
-  const velocityThreshold = 3;
-  if (y <= isAboveGround && Math.abs(vx) > velocityThreshold) {
-    animationFrameId = requestAnimationFrame(animate);
-  } else {
-    isBallMoving = false;
-    cancelAnimationFrame(animationFrameId);
-  }
-
-  layer.batchDraw();
-}

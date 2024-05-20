@@ -110,6 +110,44 @@ const ballTrail = new Konva.Line({
   points: [],
 });
 
+const tire = new Konva.Circle({
+  x: -200,
+  y: stagePosition.y / 2,
+  strokeWidth: 2,
+  stroke: "black",
+  fill: "black",
+  radius: 35,
+  draggable: true,
+  dragBoundFunc: function(pos) {
+    return {
+      x: this.getAbsolutePosition().x,
+      y: pos.y,
+    }
+  }
+
+});
+
+const innerTire = new Konva.Circle({
+  x: tire.x(),
+  y: tire.y(),
+  strokeWidth: 0.5,
+  stroke: "blue",
+  fill: "blue",
+  radius: 15,
+});
+
+const cannonBody = new Konva.Rect({
+  x: tire.x() ,
+  y: tire.y() -  50,
+  width: 180,
+  height: 100,
+  fill: "grey",
+  cornerRadius: [60, 0, 0, 60],
+  rotation: 0,
+  offsetX: 35,
+  offsetY: 50,
+});
+
 function createCloud(x, y) {
   const cloudGroup = new Konva.Group({
     x: x,
@@ -203,6 +241,34 @@ stage.on("dragmove", () => {
   prevPointerPosition = currentPointerPosition;
 });
 
+tire.on("dragmove", function() {
+  if (this.y() > groundPos.y - this.radius()) {
+    this.remove();
+    cannonBody.remove();
+    innerTire.remove();
+  } else {
+    basketBall.x(this.x());
+    basketBall.y(this.y() + 10);
+    tower.height(groundPos.y - basketBall.y() - basketBall.radius())
+    tower.x(basketBall.x() - basketBall.radius() * 2);
+    tower.y(basketBall.y() + basketBall.radius());
+    innerTire.x(this.x());
+    innerTire.y(this.y());
+    cannonBody.x(this.x());
+    cannonBody.y(this.y() -  50);
+    ballHorLine.position({ x: basketBall.x(), y: basketBall.y() });
+    ballVerLine.position({ x: basketBall.x(), y: basketBall.y() });
+  }
+});
+
+cannonBody.on("wheel", (e) => {
+e.evt.preventDefault();
+
+let newRotation = cannonBody.rotation() + (e.evt.deltaY > 0 ? 5 : -5);
+newRotation = Math.max(-90, Math.min(90, newRotation));
+cannonBody.rotation(newRotation);
+});
+
 let v0 = 50;
 let angleDeg = 45;
 let g = 9.81;
@@ -214,12 +280,23 @@ const isAboveGround = groundPos.y - 25; // Condition to check mostly the ball po
 basketBall.on("dragmove", function() {
   if(this.y() > groundPos.y - this.radius()) {
     this.y(groundPos.y - this.radius());
+    cannonBody.remove();
+    tire.remove();
+    innerTire.remove();
 1   } else {
     ballHorLine.position({ x: basketBall.x(), y: basketBall.y() });
     ballVerLine.position({ x: basketBall.x(), y: basketBall.y() });
     tower.height(groundPos.y - this.y() - this.radius());
     tower.y(this.y() + this.radius());
     tower.x(this.x() - this.radius() * 2);
+    layer.add(cannonBody, tire, innerTire);
+    tire.x(basketBall.x());
+    tire.y(basketBall.y() - 10);
+    innerTire.x(tire.x());
+    innerTire.y(tire.y());
+    cannonBody.x(tire.x());
+    cannonBody.y(tire.y() -  50);
+
     updateHeightSlider();
   }
   layer.batchDraw()
