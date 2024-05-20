@@ -6,7 +6,7 @@ const height = window.innerHeight;
 let stageScale = 1;
 let stagePosition = { x: width / 2, y: height / 2 };
 let groundPoints = [-width, 0, width, 0];
-let groundPos = { x: 0, y: 200 };
+let groundPos = { x: 0, y: 0 };
 let ballPosition = { x: -650, y: groundPos.y - 25 };
 let isBallMoving = false;
 
@@ -42,7 +42,7 @@ const ground = new Konva.Line({
   stroke: "black",
   strokeWidth: 1,
   x: 0,
-  y: 200,
+  y: 0,
 });
 
 const dirt = new Konva.Rect({
@@ -231,7 +231,7 @@ function createRandomClouds(numClouds) {
     const x = Math.random() * width - width / 2;
     const y = Math.random() * 300;
     const cloud = createCloud(x * 10, y);
-    layer.add(cloud);
+    bgLayer.add(cloud);
   }
 }
 
@@ -251,8 +251,9 @@ const arrow = new Konva.Arrow({
 legendGroup.add(legendBackground, vxText, vyText, xText, yText);
 layer.add(legendGroup);
 layer.add(ground);
-bgLayer.add(sky, dirt, rock);
+bgLayer.add(sky)
 createRandomClouds(100);
+bgLayer.add(dirt, rock);
 layer.add(arrow);
 layer.add(ballTrail);
 layer.add(basketBall);
@@ -470,11 +471,87 @@ cannonBody.on("click", () => {
   }
 });
 
+// function animate() {
+//   if (!isBallMoving) return;
+
+//   let x = basketBall.x() + vx * dt;
+//   let y;
+//   if (x !== basketBall.x()) {
+//     y = basketBall.y() - vy * dt + 0.5 * g * dt * dt;
+//   } else {
+//     y = basketBall.y();
+//   }
+//   console.log(x, y);
+//   if (y >= isAboveGround) {
+//     vy = -vy * 0.8;
+//     vx *= 0.9;
+//     y = isAboveGround;
+//   }
+//     vy -= g * dt;
+
+//   basketBall.position({ x, y });
+
+//   const rotationAngle = Math.atan2(vy, vx);
+//   basketBall.rotation((rotationAngle * 180) / Math.PI);
+
+//   ballHorLine.position({ x: basketBall.x(), y: basketBall.y() });
+//   ballVerLine.position({ x: basketBall.x(), y: basketBall.y() });
+
+//   const angularVelocity = (Math.sqrt(vx * vx + vy * vy) / 25) * dt;
+//   ballHorLine.rotation(
+//     ballHorLine.rotation() + (angularVelocity * 180) / Math.PI
+//   );
+//   ballVerLine.rotation(
+//     ballVerLine.rotation() + (angularVelocity * 180) / Math.PI
+//   );
+
+//   // Update HTML legend
+//   document.getElementById("vx-value").textContent = vx.toFixed(2);
+//   document.getElementById("vy-value").textContent = vy.toFixed(2);
+//   document.getElementById("x-value").textContent = x.toFixed(2);
+//   document.getElementById("y-value").textContent = y.toFixed(2);
+
+//   const velocityThreshold = 0.1;
+//   if (y <= isAboveGround && Math.abs(vx) > velocityThreshold) {
+//     ballTrail.points(ballTrail.points().concat([x, y]));
+
+//     basketBall.draggable(false);
+//     tire.draggable(false);
+//     toggleSliders(true);
+//     animationFrameId = requestAnimationFrame(animate);
+//   } else {
+//     isBallMoving = false;
+//     cancelAnimationFrame(animationFrameId);
+//     if (basketBall.x() === tire.x()) {
+//       tower.show();
+//       cannonBody.show();
+//       tire.show();
+//       innerTire.show();  
+//     } else {
+//       tower.hide();
+//       cannonBody.hide();
+//       tire.hide();
+//       innerTire.hide();  
+
+//     }
+//     arrow.hide();
+//     document.getElementById("vx-value").textContent = 0;
+//     document.getElementById("vy-value").textContent = 0;
+//     basketBall.draggable(true);
+//     tire.draggable(true);
+//     arrow.position({x: basketBall.x(), y: basketBall.y()});
+//     arrow.show();
+//     toggleSliders(false);
+//   }
+//   layer.batchDraw();
+// }
 function animate() {
   if (!isBallMoving) return;
 
   let x = basketBall.x() + vx * dt;
-  let y = basketBall.y() - vy * dt + 0.5 * g * dt * dt;
+  let y = x !== basketBall.x() 
+  ? basketBall.y() - vy * dt + 0.5 * g * dt * dt
+  : basketBall.y();
 
   if (y >= isAboveGround) {
     vy = -vy * 0.8;
@@ -485,7 +562,6 @@ function animate() {
   vy -= g * dt;
 
   basketBall.position({ x, y });
-
   const rotationAngle = Math.atan2(vy, vx);
   basketBall.rotation((rotationAngle * 180) / Math.PI);
 
@@ -493,23 +569,17 @@ function animate() {
   ballVerLine.position({ x: basketBall.x(), y: basketBall.y() });
 
   const angularVelocity = (Math.sqrt(vx * vx + vy * vy) / 25) * dt;
-  ballHorLine.rotation(
-    ballHorLine.rotation() + (angularVelocity * 180) / Math.PI
-  );
-  ballVerLine.rotation(
-    ballVerLine.rotation() + (angularVelocity * 180) / Math.PI
-  );
+  ballHorLine.rotation(ballHorLine.rotation() + (angularVelocity * 180) / Math.PI);
+  ballVerLine.rotation(ballVerLine.rotation() + (angularVelocity * 180) / Math.PI);
 
-  // Update HTML legend
   document.getElementById("vx-value").textContent = vx.toFixed(2);
   document.getElementById("vy-value").textContent = vy.toFixed(2);
   document.getElementById("x-value").textContent = x.toFixed(2);
-  document.getElementById("y-value").textContent = y.toFixed(2);
+  document.getElementById("y-value").textContent = (basketBall.radius() + y).toFixed(2);
 
   const velocityThreshold = 0.1;
   if (y <= isAboveGround && Math.abs(vx) > velocityThreshold) {
     ballTrail.points(ballTrail.points().concat([x, y]));
-
     basketBall.draggable(false);
     tire.draggable(false);
     toggleSliders(true);
@@ -517,19 +587,22 @@ function animate() {
   } else {
     isBallMoving = false;
     cancelAnimationFrame(animationFrameId);
-    arrow.hide();
+
+    const isCannonPosition = basketBall.x() === tire.x();
+    tower.visible(isCannonPosition);
+    cannonBody.visible(isCannonPosition);
+    tire.visible(isCannonPosition);
+    innerTire.visible(isCannonPosition);
+    arrow.visible(!isCannonPosition);
+
     document.getElementById("vx-value").textContent = 0;
     document.getElementById("vy-value").textContent = 0;
     basketBall.draggable(true);
     tire.draggable(true);
-    tower.hide();
-    cannonBody.hide();
-    tire.hide();
-    innerTire.hide();
-    arrow.position({x: basketBall.x(), y: basketBall.y()});
-    arrow.show();
+    arrow.position({ x: basketBall.x(), y: basketBall.y() });
     toggleSliders(false);
   }
+
   layer.batchDraw();
 }
 
