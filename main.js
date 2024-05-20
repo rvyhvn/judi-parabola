@@ -255,7 +255,7 @@ tire.on("dragmove", function() {
     innerTire.x(this.x());
     innerTire.y(this.y());
     cannonBody.x(this.x());
-    cannonBody.y(this.y() -  50);
+    cannonBody.y(this.y() - 25);
     ballHorLine.position({ x: basketBall.x(), y: basketBall.y() });
     ballVerLine.position({ x: basketBall.x(), y: basketBall.y() });
   }
@@ -386,13 +386,26 @@ function updateHeightSlider() {
 // Update ball's position based on slider value
 heightSlider.addEventListener('input', (event) => {
   const newHeight = parseFloat(event.target.value);
+  if (newHeight === 0) {
+    tire.remove();
+    innerTire.remove();
+    cannonBody.remove();
+  } else {
+    layer.add(cannonBody, tire, innerTire);
+  }
   document.getElementById('height-value').textContent = newHeight;
   basketBall.y(groundPos.y - newHeight - basketBall.radius());
   ballHorLine.position({ x: basketBall.x(), y: basketBall.y() });
   ballVerLine.position({ x: basketBall.x(), y: basketBall.y() });
   tower.height(newHeight);
-  tower.y(groundPos.y - newHeight);
   tower.x(basketBall.x() - basketBall.radius() * 2);
+  tower.y(groundPos.y - newHeight);
+  tire.x(basketBall.x());
+  tire.y(basketBall.y() - 10);
+  innerTire.x(tire.x());
+  innerTire.y(tire.y());
+  cannonBody.x(tire.x());
+  cannonBody.y(tire.y() - 25);  
   layer.batchDraw();
 });
 
