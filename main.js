@@ -349,6 +349,7 @@ tire.on("dragstart", function() {
     cannonBody.show();
     this.show();
     innerTire.show();
+    arrow.hide();
   }
   layer.batchDraw();
 });
@@ -368,6 +369,7 @@ tire.on("dragmove", function() {
     cannonBody.show();
     this.show();
     innerTire.show();
+    arrow.hide();
     basketBall.x(this.x());
     basketBall.y(this.y() + 10);
     tower.height(groundPos.y - basketBall.y() - basketBall.radius());
@@ -384,6 +386,7 @@ tire.on("dragmove", function() {
     cannonBody.hide();
     this.hide();
     innerTire.hide();
+    arrow.show();
   }
   updateHeightSlider();
   layer.batchDraw();
@@ -394,6 +397,7 @@ tire.on("dragend", function() {
     cannonBody.show();
     this.show();
     innerTire.show();
+    arrow.hide();
   }
   layer.batchDraw();
 })
@@ -412,7 +416,7 @@ let g = 9.81;
 const dt = 0.1;
 
 let t, v0x, v0y, vx, vy;
-const isAboveGround = groundPos.y - 25; // Condition to check mostly the ball postition.
+const isAboveGround = groundPos.y - 25; 
 
 layer.add(cannonBody, tire, innerTire);
 
@@ -421,6 +425,7 @@ basketBall.on("dragstart", function() {
     cannonBody.show();
     tire.show();
     innerTire.show();
+    arrow.hide();
   }
   layer.batchDraw();
 
@@ -441,6 +446,7 @@ basketBall.on("dragmove", function() {
     cannonBody.show();
     tire.show();
     innerTire.show();
+    arrow.hide();
     tire.x(basketBall.x());
     tire.y(basketBall.y() - 10);
     innerTire.x(tire.x());
@@ -451,6 +457,7 @@ basketBall.on("dragmove", function() {
     cannonBody.hide();
     tire.hide();
     innerTire.hide();
+    arrow.show();
   }
     updateHeightSlider();
 
@@ -462,6 +469,7 @@ basketBall.on("dragend", function() {
     cannonBody.show();
     tire.show();
     innerTire.show();
+    arrow.hide()
   }
   layer.batchDraw();
 
