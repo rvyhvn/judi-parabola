@@ -148,6 +148,51 @@ const cannonBody = new Konva.Rect({
   offsetY: 50,
 });
 
+// Create legend
+const legendGroup = new Konva.Group({
+  x: width - 150,
+  y: height - 100,
+});
+
+const legendBackground = new Konva.Rect({
+  width: 150,
+  height: 100,
+  fill: 'cyan',
+  opacity: 0.5,
+});
+
+const vxText = new Konva.Text({
+  x: 5,
+  y: 5,
+  text: 'vx: 0',
+  fontSize: 16,
+  fill: 'black',
+});
+
+const vyText = new Konva.Text({
+  x: 5,
+  y: 25,
+  text: 'vy: 0',
+  fontSize: 16,
+  fill: 'black',
+});
+
+const xText = new Konva.Text({
+  x: 5,
+  y: 45,
+  text: 'x: 0',
+  fontSize: 16,
+  fill: 'black',
+});
+
+const yText = new Konva.Text({
+  x: 5,
+  y: 65,
+  text: 'y: 0',
+  fontSize: 16,
+  fill: 'black',
+});
+
 function createCloud(x, y) {
   const cloudGroup = new Konva.Group({
     x: x,
@@ -185,9 +230,36 @@ function createRandomClouds(numClouds) {
   }
 }
 
+let initialAngle = 45;
+
+const arrow = new Konva.Arrow({
+  x: basketBall.x(),
+  y: basketBall.y(),
+  points: [0, 0, 75, 0],
+  pointerLength: 10,
+  pointerWidth: 10,
+  fill: 'black',
+  stroke: 'black',
+  rotation: -initialAngle,
+});
+
+document.getElementById('angle-slider').value = initialAngle;
+document.getElementById('angle-value').textContent = initialAngle;
+
+document.getElementById('angle-slider').addEventListener('input', (event) => {
+  angleDeg = parseFloat(event.target.value);
+  document.getElementById('angle-value').textContent = angleDeg;
+  
+  arrow.rotation(-angleDeg);
+  layer.batchDraw();
+});
+
+legendGroup.add(legendBackground, vxText, vyText, xText, yText);
+layer.add(legendGroup);
 layer.add(ground);
 bgLayer.add(sky, dirt, rock);
 createRandomClouds(100);
+layer.add(arrow);
 layer.add(basketBall);
 layer.add(ballHorLine);
 layer.add(ballVerLine);
@@ -422,6 +494,7 @@ cannonBody.on("click", () => {
 })
 layer.add(ballTrail);
 
+// Update legend during animation
 function animate() {
   if (!isBallMoving) return;
 
@@ -452,18 +525,19 @@ function animate() {
 
   ballTrail.points(ballTrail.points().concat([x, y]));
 
+  // Update HTML legend
+  document.getElementById('vx-value').textContent = vx.toFixed(2);
+  document.getElementById('vy-value').textContent = vy.toFixed(2);
+  document.getElementById('x-value').textContent = x.toFixed(2);
+  document.getElementById('y-value').textContent = y.toFixed(2);
+
   const velocityThreshold = 3;
-  if (
-    y <= isAboveGround 
-    && Math.abs(vx) > velocityThreshold
-    ) 
-    {
+  if (y <= isAboveGround && Math.abs(vx) > velocityThreshold) {
     animationFrameId = requestAnimationFrame(animate);
   } else {
     isBallMoving = false;
     cancelAnimationFrame(animationFrameId);
   }
-
   layer.batchDraw();
 }
 
@@ -476,7 +550,6 @@ function updateHeightSlider() {
   heightValDisplay.textContent = ballHeight;
 }
 
-// Update ball's position based on slider value
 heightSlider.addEventListener('input', (event) => {
   const newHeight = parseFloat(event.target.value);
   if (newHeight === 0) {
@@ -499,6 +572,7 @@ heightSlider.addEventListener('input', (event) => {
   innerTire.y(tire.y());
   cannonBody.x(tire.x());
   cannonBody.y(tire.y() - 25);  
+  arrow.position({ x: basketBall.x(), y: basketBall.y() });
   layer.batchDraw();
 });
 
@@ -506,6 +580,12 @@ heightSlider.addEventListener('input', (event) => {
 document.getElementById('velocity-slider').addEventListener('input', (event) => {
   v0 = parseFloat(event.target.value);
   document.getElementById('velocity-value').textContent = v0;
+  animate(); // Panggil fungsi animate setelah mengatur slider
+  
+  // Menghitung panjang baru panah
+  const newLength = v0 * 1.5; // Sesuaikan faktor scaling sesuai kebutuhan
+  arrow.points([0, 0, newLength, 0]); // Mengatur panjang baru pada panah
+  layer.batchDraw(); // Memperbarui tampilan
 });
 
 document.getElementById('gravity-slider').addEventListener('input', (event) => {
@@ -517,3 +597,4 @@ document.getElementById('angle-slider').addEventListener('input', (event) => {
   angleDeg = parseFloat(event.target.value);
   document.getElementById('angle-value').textContent = angleDeg;
 });
+
