@@ -386,6 +386,7 @@ function updateHeightSlider() {
 // Update ball's position based on slider value
 heightSlider.addEventListener('input', (event) => {
   const newHeight = parseFloat(event.target.value);
+  document.getElementById('height-value').textContent = newHeight;
   basketBall.y(groundPos.y - newHeight - basketBall.radius());
   ballHorLine.position({ x: basketBall.x(), y: basketBall.y() });
   ballVerLine.position({ x: basketBall.x(), y: basketBall.y() });
