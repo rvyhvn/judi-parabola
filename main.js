@@ -594,6 +594,7 @@ document.getElementById("gravity-slider").addEventListener("input", (event) => {
 
 document.getElementById("angle-slider").addEventListener("input", (event) => {
   angleDeg = parseFloat(event.target.value);
+  cannonBody.rotation(-angleDeg);
   document.getElementById("angle-value").textContent = angleDeg;
 });
 
