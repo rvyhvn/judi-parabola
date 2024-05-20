@@ -192,6 +192,33 @@ function createRandomClouds(numClouds) {
   }
 }
 
+let initialAngle = 45;
+
+const arrow = new Konva.Arrow({
+  x: basketBall.x(),
+  y: basketBall.y(),
+  points: [0, 0, 75, 0],
+  pointerLength: 10,
+  pointerWidth: 10,
+  fill: 'black',
+  stroke: 'black',
+  rotation: -initialAngle,
+});
+
+layer.add(arrow);
+
+document.getElementById('angle-slider').value = initialAngle;
+document.getElementById('angle-value').textContent = initialAngle;
+
+document.getElementById('angle-slider').addEventListener('input', (event) => {
+  angleDeg = parseFloat(event.target.value);
+  document.getElementById('angle-value').textContent = angleDeg;
+  
+  arrow.rotation(-angleDeg);
+  layer.batchDraw();
+});
+
+
 legendGroup.add(legendBackground, vxText, vyText, xText, yText);
 layer.add(legendGroup);
 layer.add(ground);
