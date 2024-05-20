@@ -110,6 +110,51 @@ const ballTrail = new Konva.Line({
   points: [],
 });
 
+// Create legend
+const legendGroup = new Konva.Group({
+  x: width - 150,
+  y: height - 100,
+});
+
+const legendBackground = new Konva.Rect({
+  width: 150,
+  height: 100,
+  fill: 'cyan',
+  opacity: 0.5,
+});
+
+const vxText = new Konva.Text({
+  x: 5,
+  y: 5,
+  text: 'vx: 0',
+  fontSize: 16,
+  fill: 'black',
+});
+
+const vyText = new Konva.Text({
+  x: 5,
+  y: 25,
+  text: 'vy: 0',
+  fontSize: 16,
+  fill: 'black',
+});
+
+const xText = new Konva.Text({
+  x: 5,
+  y: 45,
+  text: 'x: 0',
+  fontSize: 16,
+  fill: 'black',
+});
+
+const yText = new Konva.Text({
+  x: 5,
+  y: 65,
+  text: 'y: 0',
+  fontSize: 16,
+  fill: 'black',
+});
+
 function createCloud(x, y) {
   const cloudGroup = new Konva.Group({
     x: x,
@@ -147,6 +192,8 @@ function createRandomClouds(numClouds) {
   }
 }
 
+legendGroup.add(legendBackground, vxText, vyText, xText, yText);
+layer.add(legendGroup);
 layer.add(ground);
 bgLayer.add(sky, dirt, rock);
 createRandomClouds(100);
@@ -240,6 +287,7 @@ basketBall.on("click", () => {
 
 layer.add(ballTrail);
 
+// Update legend during animation
 function animate() {
   if (!isBallMoving) return;
 
@@ -270,12 +318,14 @@ function animate() {
 
   ballTrail.points(ballTrail.points().concat([x, y]));
 
+  // Update HTML legend
+  document.getElementById('vx-value').textContent = vx.toFixed(2);
+  document.getElementById('vy-value').textContent = vy.toFixed(2);
+  document.getElementById('x-value').textContent = x.toFixed(2);
+  document.getElementById('y-value').textContent = y.toFixed(2);
+
   const velocityThreshold = 3;
-  if (
-    y <= isAboveGround 
-    && Math.abs(vx) > velocityThreshold
-    ) 
-    {
+  if (y <= isAboveGround && Math.abs(vx) > velocityThreshold) {
     animationFrameId = requestAnimationFrame(animate);
   } else {
     isBallMoving = false;
