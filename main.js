@@ -10,9 +10,9 @@ let groundPos = { x: 0, y: 200 };
 let ballPosition = { x: -650, y: groundPos.y - 25 };
 let isBallMoving = false;
 
-let v0 = 50;
-let angleDeg = 45;
-let g = 9.81;
+let v0 = document.getElementById('velocity-slider').value;
+let angleDeg = document.getElementById('angle-slider').value;
+let g = document.getElementById('gravity-slider').value;
 const dt = 0.1;
 
 let t, v0x, v0y, vx, vy;
@@ -151,7 +151,7 @@ const cannonBody = new Konva.Rect({
   cornerRadius: [60, 0, 0, 60],
   rotation: 0,
   offsetX: 35,
-  offsetY: 50,
+  offsetY: 35,
 });
 
 const legendGroup = new Konva.Group({
@@ -343,6 +343,7 @@ basketBall.on("dragmove", function () {
     innerTire.y(tire.y());
     cannonBody.x(tire.x());
     cannonBody.y(tire.y() - 25);
+    cannonBody.rotation(-document.getElementById('angle-slider').value);
   } else {
     cannonBody.hide();
     tire.hide();
@@ -368,7 +369,7 @@ basketBall.on("click", () => {
   if (!isBallMoving) {
     isBallMoving = true;
     t = 0;
-    const angleRad = (angleDeg * Math.PI) / 180;
+    const angleRad = (document.getElementById('angle-slider').value * Math.PI) / 180;
     v0x = v0 * Math.cos(angleRad);
     v0y = v0 * Math.sin(angleRad);
     vx = v0x;
@@ -440,15 +441,22 @@ cannonBody.on("wheel", (e) => {
   e.evt.preventDefault();
 
   let newRotation = cannonBody.rotation() + (e.evt.deltaY > 0 ? 5 : -5);
-  newRotation = Math.max(-90, Math.min(90, newRotation));
+  newRotation = Math.max(-90, Math.min(0, newRotation));
   cannonBody.rotation(newRotation);
+
+  const newAngleDeg = -newRotation;
+  document.getElementById('angle-slider').value = newAngleDeg;
+  document.getElementById('angle-value').textContent = newAngleDeg;
+
+  arrow.rotation(-newAngleDeg);
+  layer.batchDraw();
 });
 
 cannonBody.on("click", () => {
   if (!isBallMoving) {
     isBallMoving = true;
     t = 0;
-    const angleRad = (angleDeg * Math.PI) / 180;
+    const angleRad = (document.getElementById('angle-slider').value * Math.PI) / 180;
     v0x = v0 * Math.cos(angleRad);
     v0y = v0 * Math.sin(angleRad);
     vx = v0x;
@@ -564,6 +572,7 @@ heightSlider.addEventListener("input", (event) => {
   layer.batchDraw();
 });
 
+
 // Slider event listeners
 document
   .getElementById("velocity-slider")
@@ -598,3 +607,11 @@ document.getElementById("angle-slider").addEventListener("input", (event) => {
   arrow.rotation(-angleDeg);
   layer.batchDraw();
 });
+
+window.onload = function() {
+  document.getElementById('velocity-slider').value = document.getElementById('velocity-value').textContent;
+  document.getElementById('gravity-slider').value = document.getElementById('gravity-value').textContent;
+  document.getElementById('angle-slider').value = document.getElementById('angle-value').textContent;
+  document.getElementById('height-slider').value = document.getElementById('height-value').textContent;
+
+}
