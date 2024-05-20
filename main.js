@@ -205,8 +205,6 @@ const arrow = new Konva.Arrow({
   rotation: -initialAngle,
 });
 
-
-
 document.getElementById('angle-slider').value = initialAngle;
 document.getElementById('angle-value').textContent = initialAngle;
 
@@ -377,13 +375,9 @@ heightSlider.addEventListener('input', (event) => {
   ballVerLine.position({ x: basketBall.x(), y: basketBall.y() });
   tower.height(newHeight);
   tower.y(groundPos.y - newHeight);
-
-  // Update arrow position based on ball position
   arrow.position({ x: basketBall.x(), y: basketBall.y() });
-
   layer.batchDraw();
 });
-
 
 // Slider event listeners
 document.getElementById('velocity-slider').addEventListener('input', (event) => {
@@ -396,7 +390,6 @@ document.getElementById('velocity-slider').addEventListener('input', (event) => 
   arrow.points([0, 0, newLength, 0]); // Mengatur panjang baru pada panah
   layer.batchDraw(); // Memperbarui tampilan
 });
-
 
 document.getElementById('gravity-slider').addEventListener('input', (event) => {
   g = parseFloat(event.target.value);
