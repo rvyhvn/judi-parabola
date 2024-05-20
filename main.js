@@ -27,7 +27,7 @@ const stage = new Konva.Stage({
 });
 
 const layer = new Konva.Layer();
-const bgLayer = new Konva.Layer(); // Layer for the color of the backgrounds (i.e. sky, dirt and rock).
+const bgLayer = new Konva.Layer(); // Layer for the color of the backgrounds (i.e. sky, dirt and rock)
 
 const ground = new Konva.Line({
   points: groundPoints,
@@ -217,7 +217,7 @@ const isAboveGround = groundPos.y - 25; // Condition to check mostly the ball po
 basketBall.on("dragmove", function() {
   if(this.y() > groundPos.y - this.radius()) {
     this.y(groundPos.y - this.radius());
-1  } else {
+1   } else {
     ballHorLine.position({ x: basketBall.x(), y: basketBall.y() });
     ballVerLine.position({ x: basketBall.x(), y: basketBall.y() });
     tower.height(groundPos.y - this.y() - this.radius());
