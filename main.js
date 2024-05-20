@@ -27,7 +27,7 @@ const stage = new Konva.Stage({
 });
 
 const layer = new Konva.Layer();
-const bgLayer = new Konva.Layer(); // Layer for the color of the backgrounds (i.e. sky, dirt and rock)
+const bgLayer = new Konva.Layer();
 
 const ground = new Konva.Line({
   points: groundPoints,
@@ -99,7 +99,6 @@ const tower = new Konva.Rect({
   width: basketBall.radius() * 4,
   height: 0,
   fill: '#c1752e',
-  // stroke: 'black',
   strokeWidth: 2,
 })
 
@@ -167,8 +166,6 @@ stage.on("pointermove", () => {
 
 stage.on("dragmove", () => {
   const currentPointerPosition = stage.getPointerPosition();
-  // console.log(currentPointerPosition);
-  // const offsetX = stage.x() - stagePosition.x;
   console.log(ground.y())
   const offsetX = currentPointerPosition.x - prevPointerPosition.x;
   const offsetY = currentPointerPosition.y - prevPointerPosition.y;
@@ -259,7 +256,6 @@ function animate() {
 
   basketBall.position({ x, y });
 
-  // Perhitungan rotasi bola berdasarkan kecepatan sudut
   const rotationAngle = Math.atan2(vy, vx);
   basketBall.rotation((rotationAngle * 180) / Math.PI);
 
@@ -295,7 +291,7 @@ const heightValDisplay = document.getElementById('height-value')
 function updateHeightSlider() {
   const ballHeight = groundPos.y - basketBall.y() - basketBall.radius();
   heightSlider.value = ballHeight;
-  heightValueDisplay.textContent = ballHeight;
+  heightValDisplay.textContent = ballHeight;
 }
 
 // Update ball's position based on slider value
