@@ -10,9 +10,9 @@ let groundPos = { x: 0, y: 200 };
 let ballPosition = { x: -650, y: groundPos.y - 25 };
 let isBallMoving = false;
 
-let v0 = document.getElementById('velocity-slider').value;
-let angleDeg = document.getElementById('angle-slider').value;
-let g = document.getElementById('gravity-slider').value;
+let v0 = document.getElementById("velocity-slider").value;
+let angleDeg = document.getElementById("angle-slider").value;
+let g = document.getElementById("gravity-slider").value;
 const dt = 0.1;
 
 let t, v0x, v0y, vx, vy;
@@ -327,7 +327,7 @@ basketBall.on("dragmove", function () {
 
   ballHorLine.position({ x: basketBall.x(), y: basketBall.y() });
   ballVerLine.position({ x: basketBall.x(), y: basketBall.y() });
-  arrow.position({x: this.x(), y: this.y()})
+  arrow.position({ x: this.x(), y: this.y() });
   tower.height(groundPos.y - this.y() - this.radius());
   tower.y(this.y() + this.radius());
   tower.x(this.x() - this.radius() * 2);
@@ -336,6 +336,7 @@ basketBall.on("dragmove", function () {
     cannonBody.show();
     tire.show();
     innerTire.show();
+    tower.show();
     arrow.hide();
     tire.x(basketBall.x());
     tire.y(basketBall.y() - 10);
@@ -343,7 +344,7 @@ basketBall.on("dragmove", function () {
     innerTire.y(tire.y());
     cannonBody.x(tire.x());
     cannonBody.y(tire.y() - 25);
-    cannonBody.rotation(-document.getElementById('angle-slider').value);
+    cannonBody.rotation(-document.getElementById("angle-slider").value);
   } else {
     cannonBody.hide();
     tire.hide();
@@ -369,7 +370,8 @@ basketBall.on("click", () => {
   if (!isBallMoving) {
     isBallMoving = true;
     t = 0;
-    const angleRad = (document.getElementById('angle-slider').value * Math.PI) / 180;
+    const angleRad =
+      (document.getElementById("angle-slider").value * Math.PI) / 180;
     v0x = v0 * Math.cos(angleRad);
     v0y = v0 * Math.sin(angleRad);
     vx = v0x;
@@ -398,13 +400,14 @@ tire.on("dragmove", function () {
     tower.y(basketBall.y() + basketBall.radius());
     ballHorLine.position({ x: basketBall.x(), y: basketBall.y() });
     ballVerLine.position({ x: basketBall.x(), y: basketBall.y() });
-    arrow.position({x: basketBall.x(), y: basketBall.y()})
+    arrow.position({ x: basketBall.x(), y: basketBall.y() });
   }
 
   if (this.y() < groundPos.y - this.radius()) {
     cannonBody.show();
     this.show();
     innerTire.show();
+    tower.show();
     arrow.hide();
     basketBall.x(this.x());
     basketBall.y(this.y() + 10);
@@ -445,8 +448,8 @@ cannonBody.on("wheel", (e) => {
   cannonBody.rotation(newRotation);
 
   const newAngleDeg = -newRotation;
-  document.getElementById('angle-slider').value = newAngleDeg;
-  document.getElementById('angle-value').textContent = newAngleDeg;
+  document.getElementById("angle-slider").value = newAngleDeg;
+  document.getElementById("angle-value").textContent = newAngleDeg;
 
   arrow.rotation(-newAngleDeg);
   layer.batchDraw();
@@ -456,7 +459,8 @@ cannonBody.on("click", () => {
   if (!isBallMoving) {
     isBallMoving = true;
     t = 0;
-    const angleRad = (document.getElementById('angle-slider').value * Math.PI) / 180;
+    const angleRad =
+      (document.getElementById("angle-slider").value * Math.PI) / 180;
     v0x = v0 * Math.cos(angleRad);
     v0y = v0 * Math.sin(angleRad);
     vx = v0x;
@@ -466,11 +470,9 @@ cannonBody.on("click", () => {
   }
 });
 
-// Update legend during animation
 function animate() {
   if (!isBallMoving) return;
 
-  
   let x = basketBall.x() + vx * dt;
   let y = basketBall.y() - vy * dt + 0.5 * g * dt * dt;
 
@@ -498,7 +500,6 @@ function animate() {
     ballVerLine.rotation() + (angularVelocity * 180) / Math.PI
   );
 
-
   // Update HTML legend
   document.getElementById("vx-value").textContent = vx.toFixed(2);
   document.getElementById("vy-value").textContent = vy.toFixed(2);
@@ -507,19 +508,23 @@ function animate() {
 
   const velocityThreshold = 0.1;
   if (y <= isAboveGround && Math.abs(vx) > velocityThreshold) {
-  ballTrail.points(ballTrail.points().concat([x, y]));
+    ballTrail.points(ballTrail.points().concat([x, y]));
 
     basketBall.draggable(false);
-    tire.draggable(false);  
+    tire.draggable(false);
     toggleSliders(true);
     animationFrameId = requestAnimationFrame(animate);
   } else {
     isBallMoving = false;
     cancelAnimationFrame(animationFrameId);
     document.getElementById("vx-value").textContent = 0;
-    document.getElementById("vy-value").textContent = 0;          
+    document.getElementById("vy-value").textContent = 0;
     basketBall.draggable(true);
-    tire.draggable(true);  
+    tire.draggable(true);
+    tower.hide();
+    cannonBody.hide();
+    tire.hide();
+    innerTire.hide();
     toggleSliders(false);
   }
   layer.batchDraw();
@@ -535,10 +540,10 @@ function updateHeightSlider() {
 }
 
 function toggleSliders(isDisabled) {
-  const sliders = document.querySelectorAll('.slider');
-  sliders.forEach(slider => {
+  const sliders = document.querySelectorAll(".slider");
+  sliders.forEach((slider) => {
     slider.disabled = isDisabled;
-  })
+  });
 }
 
 heightSlider.addEventListener("input", (event) => {
@@ -549,10 +554,10 @@ heightSlider.addEventListener("input", (event) => {
     cannonBody.hide();
     arrow.show();
   } else {
-    // layer.add(cannonBody, tire, innerTire);
-    cannonBody.show()
+    cannonBody.show();
     tire.show();
-    innerTire.show()
+    innerTire.show();
+    tower.show();
     arrow.hide();
   }
   document.getElementById("height-value").textContent = newHeight;
@@ -571,7 +576,6 @@ heightSlider.addEventListener("input", (event) => {
   arrow.position({ x: basketBall.x(), y: basketBall.y() });
   layer.batchDraw();
 });
-
 
 // Slider event listeners
 document
@@ -609,10 +613,13 @@ document.getElementById("angle-slider").addEventListener("input", (event) => {
   layer.batchDraw();
 });
 
-window.onload = function() {
-  document.getElementById('velocity-slider').value = document.getElementById('velocity-value').textContent;
-  document.getElementById('gravity-slider').value = document.getElementById('gravity-value').textContent;
-  document.getElementById('angle-slider').value = document.getElementById('angle-value').textContent;
-  document.getElementById('height-slider').value = document.getElementById('height-value').textContent;
-
-}
+window.onload = function () {
+  document.getElementById("velocity-slider").value =
+    document.getElementById("velocity-value").textContent;
+  document.getElementById("gravity-slider").value =
+    document.getElementById("gravity-value").textContent;
+  document.getElementById("angle-slider").value =
+    document.getElementById("angle-value").textContent;
+  document.getElementById("height-slider").value =
+    document.getElementById("height-value").textContent;
+};
