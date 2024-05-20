@@ -111,8 +111,8 @@ const ballTrail = new Konva.Line({
 });
 
 const tire = new Konva.Circle({
-  x: -200,
-  y: stagePosition.y / 2,
+  x: 500,
+  y: stagePosition.y + 500,
   strokeWidth: 2,
   stroke: "black",
   fill: "black",
@@ -204,7 +204,6 @@ stage.on("pointermove", () => {
 
 stage.on("dragmove", () => {
   const currentPointerPosition = stage.getPointerPosition();
-  console.log(ground.y())
   const offsetX = currentPointerPosition.x - prevPointerPosition.x;
   const offsetY = currentPointerPosition.y - prevPointerPosition.y;
   stagePosition.x += offsetX;
@@ -241,15 +240,65 @@ stage.on("dragmove", () => {
   prevPointerPosition = currentPointerPosition;
 });
 
+// tire.on("dragmove", function() {
+//   if (this.y() > groundPos.y - this.radius()) {
+//     this.hide();
+//     cannonBody.hide();
+//     innerTire.hide();
+//     basketBall.x(this.x());
+//     basketBall.y(this.y() + 10);
+//     tower.height(groundPos.y - basketBall.y() - basketBall.radius())
+//     tower.x(basketBall.x() - basketBall.radius() * 2);
+//     tower.y(basketBall.y() + basketBall.radius());
+//     ballHorLine.position({ x: basketBall.x(), y: basketBall.y() });
+//     ballVerLine.position({ x: basketBall.x(), y: basketBall.y() });
+
+//   } else {
+//     this.show();
+//     cannonBody.show();
+//     innerTire.show();
+//     basketBall.x(this.x());
+//     basketBall.y(this.y() + 10);
+//     tower.height(groundPos.y - basketBall.y() - basketBall.radius())
+//     tower.x(basketBall.x() - basketBall.radius() * 2);
+//     tower.y(basketBall.y() + basketBall.radius());
+//     innerTire.x(this.x());
+//     innerTire.y(this.y());
+//     cannonBody.x(this.x());
+//     cannonBody.y(this.y() - 25);
+//     ballHorLine.position({ x: basketBall.x(), y: basketBall.y() });
+//     ballVerLine.position({ x: basketBall.x(), y: basketBall.y() });
+//   }
+//   updateHeightSlider();
+// });
+
+tire.on("dragstart", function() {
+  if (this.y() < groundPos.y - this.radius()) {
+    cannonBody.show();
+    this.show();
+    innerTire.show();
+  }
+  layer.batchDraw();
+});
+
 tire.on("dragmove", function() {
   if (this.y() > groundPos.y - this.radius()) {
-    this.remove();
-    cannonBody.remove();
-    innerTire.remove();
-  } else {
+    this.y(groundPos.y - this.radius());
+    basketBall.y(groundPos.y - basketBall.radius());
+    tower.height(groundPos.y - basketBall.y() - basketBall.radius());
+    tower.x(basketBall.x() - basketBall.radius() * 2);
+    tower.y(basketBall.y() + basketBall.radius());
+    ballHorLine.position({ x: basketBall.x(), y: basketBall.y() });
+    ballVerLine.position({ x: basketBall.x(), y: basketBall.y() });
+  }
+
+  if (this.y() < groundPos.y - this.radius()) {
+    cannonBody.show();
+    this.show();
+    innerTire.show();
     basketBall.x(this.x());
     basketBall.y(this.y() + 10);
-    tower.height(groundPos.y - basketBall.y() - basketBall.radius())
+    tower.height(groundPos.y - basketBall.y() - basketBall.radius());
     tower.x(basketBall.x() - basketBall.radius() * 2);
     tower.y(basketBall.y() + basketBall.radius());
     innerTire.x(this.x());
@@ -258,8 +307,24 @@ tire.on("dragmove", function() {
     cannonBody.y(this.y() - 25);
     ballHorLine.position({ x: basketBall.x(), y: basketBall.y() });
     ballVerLine.position({ x: basketBall.x(), y: basketBall.y() });
+
+  } else {
+    cannonBody.hide();
+    this.hide();
+    innerTire.hide();
   }
-});
+  updateHeightSlider();
+  layer.batchDraw();
+})
+
+tire.on("dragend", function() {
+  if (this.y() < groundPos.y - this.radius()) {
+    cannonBody.show();
+    this.show();
+    innerTire.show();
+  }
+  layer.batchDraw();
+})
 
 cannonBody.on("wheel", (e) => {
 e.evt.preventDefault();
@@ -277,30 +342,58 @@ const dt = 0.1;
 let t, v0x, v0y, vx, vy;
 const isAboveGround = groundPos.y - 25; // Condition to check mostly the ball postition.
 
+layer.add(cannonBody, tire, innerTire);
+
+basketBall.on("dragstart", function() {
+  if (this.y() < groundPos.y - this.radius()) {
+    cannonBody.show();
+    tire.show();
+    innerTire.show();
+  }
+  layer.batchDraw();
+
+})
+
 basketBall.on("dragmove", function() {
-  if(this.y() > groundPos.y - this.radius()) {
+  if (this.y() > groundPos.y - this.radius()) {
     this.y(groundPos.y - this.radius());
-    cannonBody.remove();
-    tire.remove();
-    innerTire.remove();
-1   } else {
-    ballHorLine.position({ x: basketBall.x(), y: basketBall.y() });
-    ballVerLine.position({ x: basketBall.x(), y: basketBall.y() });
-    tower.height(groundPos.y - this.y() - this.radius());
-    tower.y(this.y() + this.radius());
-    tower.x(this.x() - this.radius() * 2);
-    layer.add(cannonBody, tire, innerTire);
+  }
+
+  ballHorLine.position({ x: basketBall.x(), y: basketBall.y() });
+  ballVerLine.position({ x: basketBall.x(), y: basketBall.y() });
+  tower.height(groundPos.y - this.y() - this.radius());
+  tower.y(this.y() + this.radius());
+  tower.x(this.x() - this.radius() * 2);
+
+  if (this.y() < groundPos.y - this.radius()) {
+    cannonBody.show();
+    tire.show();
+    innerTire.show();
     tire.x(basketBall.x());
     tire.y(basketBall.y() - 10);
     innerTire.x(tire.x());
     innerTire.y(tire.y());
     cannonBody.x(tire.x());
-    cannonBody.y(tire.y() -25);
-
-    updateHeightSlider();
+    cannonBody.y(tire.y() - 25);
+  } else {
+    cannonBody.hide();
+    tire.hide();
+    innerTire.hide();
   }
-  layer.batchDraw()
+    updateHeightSlider();
+
+  layer.batchDraw();
 });
+
+basketBall.on("dragend", function() {
+  if (this.y() < groundPos.y - this.radius()) {
+    cannonBody.show();
+    tire.show();
+    innerTire.show();
+  }
+  layer.batchDraw();
+
+})
 
 basketBall.on("click", () => {
   if (!isBallMoving) {
