@@ -111,11 +111,10 @@ const ballTrail = new Konva.Line({
   points: [],
 });
 
-// Fungsi untuk membuat awan
 function createCloud(x, y) {
   const cloudGroup = new Konva.Group({
     x: x,
-    y: y * -2,
+    y: y * - 2,
   });
 
   const ellipses = [
@@ -138,13 +137,13 @@ function createCloud(x, y) {
   });
 
   return cloudGroup;
+  return cloudGroup;
 }
 
-// Fungsi untuk membuat banyak awan dengan posisi acak
 function createRandomClouds(numClouds) {
   for (let i = 0; i < numClouds; i++) {
     const x = Math.random() * width - width / 2;
-    const y = Math.random() * 300; // Sesuaikan batasan Y untuk menempatkan awan di bagian atas
+    const y = Math.random() * 300;
     const cloud = createCloud(x * 10, y);
     layer.add(cloud);
   }
@@ -208,10 +207,12 @@ stage.on("dragmove", () => {
   prevPointerPosition = currentPointerPosition;
 });
 
-const g = 9.81;
+let v0 = 50;
+let angleDeg = 45;
+let g = 9.81;
 const dt = 0.1;
 
-let v0, angleDeg, t, v0x, v0y, vx, vy;
+let t, v0x, v0y, vx, vy;
 const isAboveGround = groundPos.y - 25; // Condition to check mostly the ball postition.
 
 basketBall.on("dragmove", function() {
@@ -230,8 +231,6 @@ basketBall.on("dragmove", function() {
 basketBall.on("click", () => {
   if (!isBallMoving) {
     isBallMoving = true;
-    v0 = 60;
-    angleDeg = 60;
     t = 0;
     const angleRad = (angleDeg * Math.PI) / 180;
     v0x = v0 * Math.cos(angleRad);
@@ -252,7 +251,6 @@ function animate() {
 
   if (y >= isAboveGround) {
     vy = -vy * 0.8; // Assuming 80% restitution
-
     vx *= 0.9; // Assuming 90% horizontal velocity retention
     y = isAboveGround;
   }
@@ -260,12 +258,19 @@ function animate() {
   vy += g * dt;
 
   basketBall.position({ x, y });
+
+  // Perhitungan rotasi bola berdasarkan kecepatan sudut
   const rotationAngle = Math.atan2(vy, vx);
   basketBall.rotation((rotationAngle * 180) / Math.PI);
-  ballHorLine.rotation((rotationAngle * 180) / Math.PI);
-  ballVerLine.rotation((rotationAngle * 180) / Math.PI);
+
+  // Update posisi dan rotasi garis horizontal dan vertikal sesuai rotasi bola
   ballHorLine.position({ x: basketBall.x(), y: basketBall.y() });
   ballVerLine.position({ x: basketBall.x(), y: basketBall.y() });
+
+  // Kecepatan sudut (rad/s) dihitung dari kecepatan linear (vx, vy) dan radius bola (25)
+  const angularVelocity = (Math.sqrt(vx * vx + vy * vy) / 25) * dt;
+  ballHorLine.rotation(ballHorLine.rotation() + (angularVelocity * 180) / Math.PI);
+  ballVerLine.rotation(ballVerLine.rotation() + (angularVelocity * 180) / Math.PI);
 
   ballTrail.points(ballTrail.points().concat([x, y]));
 
@@ -281,21 +286,19 @@ function animate() {
 }
 
 // Slider event listeners
-document
-  .getElementById("velocity-slider")
-  .addEventListener("input", (event) => {
-    v0 = parseFloat(event.target.value);
-    document.getElementById("velocity-value").textContent = v0;
-  });
-
-document.getElementById("gravity-slider").addEventListener("input", (event) => {
-  g = parseFloat(event.target.value);
-  document.getElementById("gravity-value").textContent = g;
+document.getElementById('velocity-slider').addEventListener('input', (event) => {
+  v0 = parseFloat(event.target.value);
+  document.getElementById('velocity-value').textContent = v0;
 });
 
-document.getElementById("angle-slider").addEventListener("input", (event) => {
+document.getElementById('gravity-slider').addEventListener('input', (event) => {
+  g = parseFloat(event.target.value);
+  document.getElementById('gravity-value').textContent = g;
+});
+
+document.getElementById('angle-slider').addEventListener('input', (event) => {
   angleDeg = parseFloat(event.target.value);
-  document.getElementById("angle-value").textContent = angleDeg;
+  document.getElementById('angle-value').textContent = angleDeg;
 });
 
 layer.batchDraw()
