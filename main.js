@@ -246,7 +246,7 @@ function animate() {
   if (!isBallMoving) return;
 
   let x = basketBall.x() + vx * dt;
-  let y = basketBall.y() + vy * dt - 0.5 * g * dt * dt;
+  let y = basketBall.y() - vy * dt + 0.5 * g * dt * dt;
 
   if (y >= isAboveGround) {
     vy = -vy * 0.8; // Assuming 80% restitution
@@ -254,7 +254,7 @@ function animate() {
     y = isAboveGround;
   }
 
-  vy += g * dt;
+  vy -= g * dt;
 
   basketBall.position({ x, y });
 
