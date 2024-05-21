@@ -481,26 +481,6 @@ cannonBody.on("click", () => {
   }
 });
 
-const cannonBounds = cannonBody.getClientRect();
-const ballOnCannon = (
-basketBall.x() >= cannonBounds.x &&
-basketBall.x() <= cannonBounds.x + cannonBounds.width &&
-basketBall.y() >= cannonBounds.y &&
-basketBall.y() <= cannonBounds.y + cannonBounds.height
-);
-console.log(cannonBounds);
-
-// if (ballOnCannon && isBallMoving) {
-// // Make the ball follow the cannon body
-// basketBall.position({
-//   x: cannonBody.x() + cannonBody.width() / 2,
-//   y: cannonBody.y() + cannonBody.height() / 2,
-// });
-// } else {
-// // Normal ball movement
-// basketBall.position({ x, y });
-// }
-
 function animate() {
   if (!isBallMoving) return;
 
