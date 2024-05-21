@@ -481,80 +481,26 @@ cannonBody.on("click", () => {
   }
 });
 
-// function animate() {
-//   if (!isBallMoving) return;
+const cannonBounds = cannonBody.getClientRect();
+const ballOnCannon = (
+basketBall.x() >= cannonBounds.x &&
+basketBall.x() <= cannonBounds.x + cannonBounds.width &&
+basketBall.y() >= cannonBounds.y &&
+basketBall.y() <= cannonBounds.y + cannonBounds.height
+);
+console.log(cannonBounds);
 
-//   let x = basketBall.x() + vx * dt;
-//   let y;
-//   if (x !== basketBall.x()) {
-//     y = basketBall.y() - vy * dt + 0.5 * g * dt * dt;
-//   } else {
-//     y = basketBall.y();
-//   }
-//   console.log(x, y);
-//   if (y >= isAboveGround) {
-//     vy = -vy * 0.8;
-//     vx *= 0.9;
-//     y = isAboveGround;
-//   }
-//     vy -= g * dt;
-
-//   basketBall.position({ x, y });
-
-//   const rotationAngle = Math.atan2(vy, vx);
-//   basketBall.rotation((rotationAngle * 180) / Math.PI);
-
-//   ballHorLine.position({ x: basketBall.x(), y: basketBall.y() });
-//   ballVerLine.position({ x: basketBall.x(), y: basketBall.y() });
-
-//   const angularVelocity = (Math.sqrt(vx * vx + vy * vy) / 25) * dt;
-//   ballHorLine.rotation(
-//     ballHorLine.rotation() + (angularVelocity * 180) / Math.PI
-//   );
-//   ballVerLine.rotation(
-//     ballVerLine.rotation() + (angularVelocity * 180) / Math.PI
-//   );
-
-//   // Update HTML legend
-//   document.getElementById("vx-value").textContent = vx.toFixed(2);
-//   document.getElementById("vy-value").textContent = vy.toFixed(2);
-//   document.getElementById("x-value").textContent = x.toFixed(2);
-//   document.getElementById("y-value").textContent = y.toFixed(2);
-
-//   const velocityThreshold = 0.1;
-//   if (y <= isAboveGround && Math.abs(vx) > velocityThreshold) {
-//     ballTrail.points(ballTrail.points().concat([x, y]));
-
-//     basketBall.draggable(false);
-//     tire.draggable(false);
-//     toggleSliders(true);
-//     animationFrameId = requestAnimationFrame(animate);
-//   } else {
-//     isBallMoving = false;
-//     cancelAnimationFrame(animationFrameId);
-//     if (basketBall.x() === tire.x()) {
-//       tower.show();
-//       cannonBody.show();
-//       tire.show();
-//       innerTire.show();  
-//     } else {
-//       tower.hide();
-//       cannonBody.hide();
-//       tire.hide();
-//       innerTire.hide();  
-
-//     }
-//     arrow.hide();
-//     document.getElementById("vx-value").textContent = 0;
-//     document.getElementById("vy-value").textContent = 0;
-//     basketBall.draggable(true);
-//     tire.draggable(true);
-//     arrow.position({x: basketBall.x(), y: basketBall.y()});
-//     arrow.show();
-//     toggleSliders(false);
-//   }
-//   layer.batchDraw();
+// if (ballOnCannon && isBallMoving) {
+// // Make the ball follow the cannon body
+// basketBall.position({
+//   x: cannonBody.x() + cannonBody.width() / 2,
+//   y: cannonBody.y() + cannonBody.height() / 2,
+// });
+// } else {
+// // Normal ball movement
+// basketBall.position({ x, y });
 // }
+
 function animate() {
   if (!isBallMoving) return;
 
@@ -584,8 +530,8 @@ function animate() {
 
   document.getElementById("vx-value").textContent = vx.toFixed(2);
   document.getElementById("vy-value").textContent = vy.toFixed(2);
-  document.getElementById("x-value").textContent = x.toFixed(2);
-  document.getElementById("y-value").textContent = (basketBall.radius() + y).toFixed(2);
+  document.getElementById("x-value").textContent = ((stage.width() / 2) + x).toFixed(2);
+  document.getElementById("y-value").textContent = -(basketBall.radius() + y).toFixed(2);
 
   const velocityThreshold = 0.1;
   if (y <= isAboveGround && Math.abs(vx) > velocityThreshold) {
@@ -669,12 +615,11 @@ document
   .addEventListener("input", (event) => {
     v0 = parseFloat(event.target.value);
     document.getElementById("velocity-value").textContent = v0;
-    animate(); // Panggil fungsi animate setelah mengatur slider
+    animate();
 
-    // Menghitung panjang baru panah
-    const newLength = v0 * 1.5; // Sesuaikan faktor scaling sesuai kebutuhan
-    arrow.points([0, 0, newLength, 0]); // Mengatur panjang baru pada panah
-    layer.batchDraw(); // Memperbarui tampilan
+    const newLength = v0 * 1.5;
+    arrow.points([0, 0, newLength, 0]);
+    layer.batchDraw();
   });
 
 document.getElementById("gravity-slider").addEventListener("input", (event) => {
