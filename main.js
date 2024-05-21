@@ -587,6 +587,7 @@ heightSlider.addEventListener("input", (event) => {
   cannonBody.y(tire.y() - 25);
   cannonBody.rotation(-document.getElementById("angle-slider").value);
   arrow.position({ x: basketBall.x(), y: basketBall.y() });
+  updateHeightSlider();
   layer.batchDraw();
 });
 
