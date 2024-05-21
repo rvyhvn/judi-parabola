@@ -90,6 +90,9 @@ const ballHorLine = new Konva.Line({
   y: basketBall.y(),
   stroke: "black",
   strokeWidth: 1,
+  lineCap: 'round',
+  lineJoin: 'round',
+  tension: 1,
 });
 
 const ballVerLine = new Konva.Line({
@@ -98,6 +101,9 @@ const ballVerLine = new Konva.Line({
   y: basketBall.y(),
   stroke: "black",
   strokeWidth: 1,
+  lineCap: 'round',
+  lineJoin: 'round',
+  tension: 1,
 });
 
 const tower = new Konva.Rect({
@@ -606,7 +612,7 @@ function animate() {
     arrow.position({ x: basketBall.x(), y: basketBall.y() });
     toggleSliders(false);
   }
-
+  updateHeightSlider();
   layer.batchDraw();
 }
 
@@ -616,7 +622,7 @@ const heightValDisplay = document.getElementById("height-value");
 function updateHeightSlider() {
   const ballHeight = groundPos.y - basketBall.y() - basketBall.radius();
   heightSlider.value = ballHeight;
-  heightValDisplay.textContent = ballHeight;
+  heightValDisplay.textContent = ballHeight.toFixed(2);
 }
 
 function toggleSliders(isDisabled) {
